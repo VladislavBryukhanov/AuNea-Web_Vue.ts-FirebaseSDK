@@ -1,30 +1,45 @@
 <template>
-    <div>
-        UserList:
-        <div class="userList" v-for="user in users">
-            <div class="user">
-                <div class="avatar">
-                    <span class="onlineStatus"></span>
-                    <img :src='user.avatarUrl'/>
-                </div>
-                <div class="userBody">
-                    <p class="login">{{user.login}}</p>
-                    <p class="nickname">@{{user.nickname}}</p>
-                </div>
-            </div>
-        </div>
-    </div>
+    <v-sheet
+        elevation="6"
+        class="userList">
+        <v-list>
+            <template v-for="user in users">
+                <v-divider></v-divider>
+                <v-list-tile
+                        :key="user.uid"
+                        avatar
+                        v-ripple
+                        @click="">
+                <!--FIXME ripple color is not changing to custom (light grey)-->
+
+                    <v-list-tile-avatar>
+                        <img :src="user.avatarUrl">
+                        <UserNetworkStatus :userStatus="user.status"/>
+                    </v-list-tile-avatar>
+
+                    <v-list-tile-content>
+                        <v-list-tile-title v-html="user.login"></v-list-tile-title>
+                        <v-list-tile-sub-title v-html="user.nickname"></v-list-tile-sub-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+            </template>
+        </v-list>
+    </v-sheet>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator'
+import UserNetworkStatus from '@/components/UserNetworkStatus'
+import {Component, Vue, Watch} from 'vue-property-decorator';
+import {User} from "../models/User";
 
-@Component
+@Component({
+    components: {
+        UserNetworkStatus,
+    },
+})
 export default class UserList extends Vue {
 
-    public users = [];
-
-    //TODO define $store e t c proto
+    //TODO define $store e.t.c prototype
     mounted() {
         this.$store.dispatch('getUsers');
     }
@@ -36,5 +51,5 @@ export default class UserList extends Vue {
 </script>
 
 <style lang="scss">
-    /*@import url(styles.scss);*/
+    @import "../assets/scss/UserList";
 </style>

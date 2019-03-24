@@ -1,0 +1,16 @@
+.onlineStatus {
+  width: 16px;
+  height: 16px;
+  border-radius: 45px;
+  border: 1px solid gray;
+  background: white;
+  position: absolute;
+  left: -3px;
+  bottom: 0px;
+}
+.onlineStatus.online {
+  background: #558DC4;
+}
+.onlineStatus.afk {
+  background: #FFF171;
+}

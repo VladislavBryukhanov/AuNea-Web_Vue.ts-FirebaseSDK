@@ -23,12 +23,13 @@ export default new Vuex.Store({
         getUsers(state, user) {
             state.users.push(user);
         },
-        changeUser(state, {userId, user}) {
-            state.users[userId] = user;
+        changeUser(state, changedUser) {
+            const index = state.users.findIndex(item => item.uid == changedUser.uid);
+            state.users.splice(index, 1, changedUser);
         },
     },
     actions: {
-        getUsers({commit}) {
+        getUsers({ commit}) {
             database.ref('/Users').on('child_added', (userSnapshot) => {
                 commit('getUsers', userSnapshot!.val());
             });

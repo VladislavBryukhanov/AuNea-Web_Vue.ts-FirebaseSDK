@@ -13,6 +13,7 @@
     "types": [
       "webpack-env"
     ],
+//    FIXME can't create ne paths
     "paths": {
       "@/*": [
         "src/*"
@@ -20,6 +21,7 @@
     },
     "lib": [
       "esnext",
+      "es2016",
       "dom",
       "dom.iterable",
       "scripthost"

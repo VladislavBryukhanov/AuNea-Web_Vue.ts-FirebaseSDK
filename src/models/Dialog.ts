@@ -6,6 +6,13 @@ export class Dialog {
     private _speakers: Map<string, string>;
     private _unreadCounter: number;
 
+    constructor(lastMessage: Message, notify: boolean, speakers: Map<string, string>, unreadCounter: number) {
+        this._lastMessage = lastMessage;
+        this._notify = notify;
+        this._speakers = speakers;
+        this._unreadCounter = unreadCounter;
+    }
+
     get lastMessage(): Message {
         return this._lastMessage;
     }

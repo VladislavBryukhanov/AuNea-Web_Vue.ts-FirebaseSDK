@@ -3,10 +3,7 @@ import Router from 'vue-router';
 
 Vue.use(Router);
 
-// const UserList = () => import('@/UserList');
-// const UserList = () => import('@/components/UserList');
 const UserList = () => import('@/components/UserList');
-// const UserList = () => import('@components/UserList');
 
 export default new Router ({
     mode: 'hash',
@@ -15,6 +12,9 @@ export default new Router ({
             path: '/',
             component: UserList,
             name: 'UserList',
+            meta: {
+                title: 'User list'
+            },
         },
     ],
 })
