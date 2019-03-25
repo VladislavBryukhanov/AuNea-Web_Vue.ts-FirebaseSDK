@@ -1,4 +1,4 @@
-import {Message} from '@/model/Message';
+import {Message} from '@/models/Message';
 
 export class Dialog {
     private _lastMessage: Message;

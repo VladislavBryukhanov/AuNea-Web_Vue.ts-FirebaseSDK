@@ -8,6 +8,8 @@ import {Message} from '@/models/Message';
 Vue.use(Vuex);
 
 const database = firebase.database();
+const provider = new firebase.auth.GoogleAuthProvider();
+const auth = firebase.auth();
 
 const users: User[] = [];
 const messages: Message[] = [];
@@ -20,6 +22,15 @@ export default new Vuex.Store({
         dialogs,
     },
     mutations: {
+        signIn() {
+
+        },
+        signUp() {
+
+        },
+        getProfile() {
+
+        },
         getUsers(state, user) {
             state.users.push(user);
         },
@@ -29,7 +40,25 @@ export default new Vuex.Store({
         },
     },
     actions: {
-        getUsers({ commit}) {
+        signIn({ commit }) {
+            auth.signInWithPopup(provider)
+                .then(result => {
+                    console.log(result);
+                })
+                .catch((error) => {
+                    const errorCode = error.code;
+                    const errorMessage = error.message;
+                    console.log(errorCode);
+                    console.log(errorMessage);
+                });
+        },
+        signUp({ commit }) {
+
+        },
+        logOut({ commit }) {
+            auth.signOut();
+        },
+        getUsers({ commit }) {
             database.ref('/Users').on('child_added', (userSnapshot) => {
                 commit('getUsers', userSnapshot!.val());
             });
