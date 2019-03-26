@@ -3,7 +3,7 @@
         <v-sheet
             elevation="6"
             class="sign">
-            <form v-if="isSignUp" @submit="signUp">
+            <form v-if="isSignUp" @submit.prevent="signUp">
                 <v-text-field
                     v-model="login"
                     :counter="20"
@@ -15,7 +15,8 @@
                     Sign up
                 </v-btn>
             </form>
-            <form v-else @submit="signIn">
+
+            <form v-else @submit.prevent="signIn">
                 <v-btn block type="submit">
                     Sign in
                 </v-btn>
@@ -36,14 +37,14 @@ export default class Sign extends Vue {
 
     public login: string = '';
 
-    signUp(e: Event) {
-        e.preventDefault();
-        this.$store.dispatch('signUp', this.login);
+    signUp() {
+        this.$store.dispatch('signUp', this.login)
+            .then(this.$router.push('/root'));
     }
 
-    signIn(e: Event) {
-        e.preventDefault();
-        this.$store.dispatch('signIn');
+    signIn() {
+        this.$store.dispatch('signIn')
+            .then(this.$router.push('/root'));
     }
 }
 </script>
