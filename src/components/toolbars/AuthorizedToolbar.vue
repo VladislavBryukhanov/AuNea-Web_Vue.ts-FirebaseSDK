@@ -37,8 +37,8 @@
         }
 
         logOut() {
-            this.$store.dispatch('logOut')
-                .then(this.$router.push('/'));
+            this.$store.dispatch('signOut');
+            this.$router.push('/');
         }
     }
 </script>

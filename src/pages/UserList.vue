@@ -40,7 +40,10 @@ export default class UserList extends Vue {
 
     //TODO define $store e.t.c prototype
     mounted() {
-        this.$store.dispatch('getUsers');
+        // TODO implement lodash
+        if (this.$store.state.users.length === 0) {
+            this.$store.dispatch('getUsers');
+        }
     }
 
     get users() {

@@ -4,19 +4,14 @@ import firebase from 'firebase';
 import {User} from '@/models/User';
 import {Dialog} from '@/models/Dialog';
 import {Message} from '@/models/Message';
+import {AuthStates} from "@/constants/auth";
 
 Vue.use(Vuex);
 
 const database = firebase.database();
 const provider = new firebase.auth.GoogleAuthProvider();
 const auth = firebase.auth();
-firebase.auth().onAuthStateChanged((user) => {
-    if (user) {
-        console.log('user is logged');
-    } else {
-        console.log('user is logged out');
-    }
-});
+
 /*
 const myAccount: User = null;
 const users: User[] = [];
@@ -27,22 +22,42 @@ const dialogs: Dialog[] = [];
 // TODO replace logic to different blocks
 export default new Vuex.Store({
     state: {
+        snackbar: {
+            message: '',
+            duration: 500
+        },
+
         myAccount: null,
+        authState: null,
+
         users: [],
         messages: [],
         dialogs: [],
     },
-    getters: {
-        isAuthenticated: () => !!auth.currentUser
-    },
+    // getters: {
+    //     isAuthenticated: () => !!auth.currentUser
+    // },
     mutations: {
+        snackbarShow(state, {message, duration}) {
+            state.snackbar = {
+                message,
+                duration
+            }
+            console.log(message);
+            console.log(duration);
+            console.log(state.snackbar);
+        },
+        signIn(state) {
+            state.authState = AuthStates.SignedIn;
+        },
         getProfile(state, user: User) {
             state.myAccount = user;
         },
         signOut(state) {
             state.myAccount = null;
-            console.log(auth.currentUser);
-            console.log(this.getters.isAuthenticated());
+            state.authState = AuthStates.SignedOut;
+            // console.log(auth.currentUser);
+            // console.log(this.getters.isAuthenticated());
         },
         getUsers(state, user: User) {
             state.users.push(user);
@@ -53,39 +68,53 @@ export default new Vuex.Store({
         },
     },
     actions: {
-        async signIn({ dispatch }) {
+        async signIn({ commit }) {
             try {
-                await auth.signInWithPopup(provider);
-                console.log(auth.currentUser);
-                dispatch('getProfile');
+                const authUser = await auth.signInWithPopup(provider);
+                if (authUser) {
+                    commit('signIn');
+                }
             } catch (err) {
                 console.error(err);
             }
         },
         async signUp({ commit }) {
             try {
-                await auth.signInWithPopup(provider);
-                const user = await new Promise((resolve, reject) => getUser(resolve, reject));
+                const authUser = await auth.signInWithPopup(provider);
+                const user = await getUser(auth.currentUser.uid);
                 if (user) {
-                    commit('getProfile', userSnapshot!.val());
+                    commit('snackbarShow', {message: 'Such user already exists.', duration: 3000})
+                    commit('signOut');
                 } else {
-                    auth.signOut();
-                    console.log('Unauthorized');
+                    // save new user to db e t c
+                    if (authUser) {
+                        commit('signIn');
+                    }
                 }
             } catch (err) {
                 console.error(err);
             }
         },
-        getProfile({ commit }) {
-            database.ref('/Users').orderByChild('uid').equalTo(auth.currentUser.uid)
-                .on('value', (userSnapshot) => {
-                    if (userSnapshot.exists()) {
-                        commit('getProfile', userSnapshot!.val())
+        async getAuth({ commit }) {
+            return new Promise((resolve, reject) => {
+                auth.onAuthStateChanged((user) => {
+                    if (user) {
+                        commit('signIn');
                     } else {
-                        auth.signOut();
-                        console.log('Unauthorized');
+                        commit('signOut');
                     }
+                    resolve();
                 });
+            });
+        },
+        async getProfile({ commit }) {
+            try {
+                const user = await getUser(auth.currentUser.uid);
+                commit('getProfile', user);
+            } catch(err) {
+                auth.signOut();
+                commit('snackbarShow', {message: 'Unauthorized', duration: 1500})
+            }
         },
         signOut({ commit }) {
             auth.signOut();
@@ -93,26 +122,32 @@ export default new Vuex.Store({
         },
 
         getUsers({ commit }) {
-            database.ref('/Users').on('child_added', (userSnapshot) => {
+            database
+                .ref('/Users')
+                .on('child_added', (userSnapshot) => {
                 commit('getUsers', userSnapshot!.val());
             });
-            database.ref('/Users').on('child_changed', (userSnapshot) => {
+            database
+                .ref('/Users')
+                .on('child_changed', (userSnapshot) => {
                 commit('changeUser', userSnapshot!.val());
             });
         },
     },
 });
 
-const getUser = (resolve, reject) => {
-    database
-        .ref('/Users')
-        .orderByChild('uid')
-        .equalTo(auth.currentUser.uid)
-        .on('value', (userSnapshot) => {
-            if (!userSnapshot.exists()) {
-                resolve(userSnapshot!.val());
-            } else {
-                reject();
-            }
-        });
+const getUser = (uid) => {
+    return new Promise((resolve, reject) => {
+        database
+            .ref('/Users')
+            .orderByChild('uid')
+            .equalTo(uid)
+            .on('value', (userSnapshot) => {
+                if (userSnapshot.exists()) {
+                    resolve(userSnapshot!.val());
+                } else {
+                    reject();
+                }
+            });
+    });
 };

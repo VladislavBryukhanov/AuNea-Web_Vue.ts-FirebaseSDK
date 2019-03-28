@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import store from '@/store';
+import {AuthStates} from "@/constants/auth";
 
 Vue.use(Router);
 
@@ -42,6 +43,10 @@ const router = new Router ({
             },
             children: [
                 {
+                    path: '',
+                    redirect: '/UserList'
+                },
+                {
                     path: '/UserList',
                     component: UserList,
                     name: 'UserList',
@@ -54,18 +59,20 @@ const router = new Router ({
     ],
 });
 
-// TODO accessCondition = requiredAuth, requiredUnauth, public
-router.beforeEach((to, from, next) => {
+router.beforeEach(async (to, from, next) => {
 
-    const isAuthenticated = store.getters.isAuthenticated;
+    if (!store.state.authState) {
+        await store.dispatch('getAuth');
+    }
+
     let redirectParams = {};
 
     if (to.matched.some(route => route.meta.requiredAuth)) {
-        if (!isAuthenticated) {
+        if (store.state.authState === AuthStates.SignedOut) {
             redirectParams = { path: '/' }
         }
     } else if (to.matched.some(route => route.meta.requiredUnauth)) {
-        if (isAuthenticated) {
+        if (store.state.authState === AuthStates.SignedIn) {
             redirectParams = { path: '/root' }
         }
     }

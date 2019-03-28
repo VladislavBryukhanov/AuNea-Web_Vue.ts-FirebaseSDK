@@ -1,26 +1,30 @@
 <template>
     <v-flex xl12 lg8 offset-lg2 md8 offset-md2 sm10 offset-sm1 xs12>
         <v-sheet
-            elevation="6"
-            class="sign">
-            <form v-if="isSignUp" @submit.prevent="signUp">
-                <v-text-field
-                    v-model="login"
-                    :counter="20"
-                    label="Login"
-                    required>
-                </v-text-field>
+            elevation="6">
+            <div class="sign">
+                <!--<img src="../assets/LastLogopsd.png"-->
+                     <!--class="logo"/>-->
 
-                <v-btn block type="submit">
-                    Sign up
-                </v-btn>
-            </form>
+                <form v-if="isSignUp" @submit.prevent="signUp">
+                    <v-text-field
+                            v-model="login"
+                            :counter="20"
+                            label="Login"
+                            required>
+                    </v-text-field>
 
-            <form v-else @submit.prevent="signIn">
-                <v-btn block type="submit">
-                    Sign in
-                </v-btn>
-            </form>
+                    <v-btn block type="submit">
+                        Sign up
+                    </v-btn>
+                </form>
+
+                <form v-else @submit.prevent="signIn">
+                    <v-btn block type="submit">
+                        Sign in
+                    </v-btn>
+                </form>
+            </div>
         </v-sheet>
     </v-flex>
 </template>
@@ -39,12 +43,12 @@ export default class Sign extends Vue {
 
     signUp() {
         this.$store.dispatch('signUp', this.login)
-            .then(this.$router.push('/root'));
+            .then(() => this.$router.push('/root'));
     }
 
     signIn() {
         this.$store.dispatch('signIn')
-            .then(this.$router.push('/root'));
+            .then(() => this.$router.push('/root'));
     }
 }
 </script>
