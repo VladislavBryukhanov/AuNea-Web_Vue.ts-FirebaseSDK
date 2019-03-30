@@ -83,7 +83,7 @@ export default new Vuex.Store({
                 const authUser = await auth.signInWithPopup(provider);
                 const user = await getUser(auth.currentUser.uid);
                 if (user) {
-                    commit('snackbarShow', {message: 'Such user already exists.', duration: 3000})
+                    commit('snackbarShow', {message: 'Such user already exists.', duration: 3000});
                     commit('signOut');
                 } else {
                     // save new user to db e t c
@@ -112,8 +112,8 @@ export default new Vuex.Store({
                 const user = await getUser(auth.currentUser.uid);
                 commit('getProfile', user);
             } catch(err) {
+                commit('snackbarShow', {message: 'Unauthorized', duration: 1500});
                 auth.signOut();
-                commit('snackbarShow', {message: 'Unauthorized', duration: 1500})
             }
         },
         signOut({ commit }) {
