@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts">
-import UserNetworkStatus from '@/components/UserNetworkStatus.vue'
+import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
 import {Component, Vue, Watch} from 'vue-property-decorator';
 
 @Component({

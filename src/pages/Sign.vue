@@ -30,7 +30,6 @@
 </template>
 
 <script lang="ts">
-
 import { Vue, Component, Prop } from 'vue-property-decorator';
 
 @Component
@@ -41,12 +40,12 @@ export default class Sign extends Vue {
 
     public login: string = '';
 
-    signUp() {
+    public signUp() {
         this.$store.dispatch('signUp', this.login)
             .then(() => this.$router.push('/root'));
     }
 
-    signIn() {
+    public signIn() {
         this.$store.dispatch('signIn')
             .then(() => this.$router.push('/root'));
     }

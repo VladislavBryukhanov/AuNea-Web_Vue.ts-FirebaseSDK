@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import store from '@/store';
-import {AuthStates} from "@/constants/auth";
+import {AuthStates} from '@/constants/auth';
 
 Vue.use(Router);
 
@@ -17,7 +17,7 @@ const router = new Router ({
             path: '/',
             component: UnauthorizedToolbar,
             meta: {
-                requiredUnauth: true
+                requiredUnauth: true,
             },
             children: [
                 {
@@ -26,36 +26,36 @@ const router = new Router ({
                     component: Sign,
                 },
                 {
-                    path: 'signUp',
+                    path: 'SignUp',
                     name: 'SingUp',
                     component: Sign,
                     props: {
                         isSignUp: true,
-                    }
+                    },
                 },
-            ]
+            ],
         },
         {
             path: '/root',
             component: AuthorizedToolbar,
             meta: {
-                requiredAuth: true
+                requiredAuth: true,
             },
             children: [
                 {
                     path: '',
-                    redirect: '/UserList'
+                    redirect: '/UserList',
                 },
                 {
                     path: '/UserList',
                     component: UserList,
                     name: 'UserList',
                     meta: {
-                        title: 'User list'
+                        title: 'User list',
                     },
                 },
-            ]
-        }
+            ],
+        },
     ],
 });
 
@@ -67,13 +67,13 @@ router.beforeEach(async (to, from, next) => {
 
     let redirectParams = {};
 
-    if (to.matched.some(route => route.meta.requiredAuth)) {
+    if (to.matched.some((route) => route.meta.requiredAuth)) {
         if (store.state.authState === AuthStates.SignedOut) {
-            redirectParams = { path: '/' }
+            redirectParams = { path: '/' };
         }
-    } else if (to.matched.some(route => route.meta.requiredUnauth)) {
+    } else if (to.matched.some((route) => route.meta.requiredUnauth)) {
         if (store.state.authState === AuthStates.SignedIn) {
-            redirectParams = { path: '/root' }
+            redirectParams = { path: '/root' };
         }
     }
     next(redirectParams);

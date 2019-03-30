@@ -14,15 +14,14 @@
             <v-toolbar >
                 <v-list>
                     <v-list-tile
-                        avatar
-                        >
+                        v-ripple
+                        avatar>
                         <v-list-tile-avatar>
-                            <!--<img :src="this.$store.state.myAccount.avatarUrl"/>-->
-                            <img src="https://firebasestorage.googleapis.com/v0/b/messager-d15a0.appspot.com/o/messagebotforsite%40gmail.com%2FAvatar%2F9907a1c6-28d5-45f1-bf4f-64d2ca90e14d.jpeg?alt=media&token=e78466a2-1d6e-4520-bfe1-7300cad60a77"/>
+                            <img :src="myProfile.avatarUrl"/>
                         </v-list-tile-avatar>
 
                         <v-list-tile-content>
-                            <v-list-tile-title>Nameless</v-list-tile-title>
+                            <v-list-tile-title>{{myProfile.login}}</v-list-tile-title>
                         </v-list-tile-content>
 
                         <v-list-tile-action>
@@ -40,6 +39,7 @@
                 <v-list-tile
                     v-for="item in navigationItems"
                     :to="item.to"
+                    v-ripple
                     @click.stop="item.action">
                     <v-list-tile-action>
                         <v-icon>{{item.icon}}</v-icon>
@@ -64,37 +64,38 @@
 </template>
 
 <script lang="ts">
-    import { Vue, Component } from 'vue-property-decorator';
-    import router from '@/router';
+import { Vue, Component } from 'vue-property-decorator';
+import router from '@/router';
+import {User} from "../../models/User";
 
-    @Component
-    export default class PublicToolbar extends Vue {
+@Component
+export default class PublicToolbar extends Vue {
 //        public pageName: string = 'AuNea2';
 
-        public navigationItems = [
-            {
-                icon: 'group',
-                name: 'User list',
-                to: '/UserList'
-            },
-            {
-                icon: 'chat',
-                name: 'Dialogs',
-                to: '/Dialogs'
-            },
-            {
-                icon: 'settings',
-                name: 'Profile',
-                to: '/Profile'
-            },
-            {
-                icon: 'power_settings_new',
-                name: 'Sign out',
-                action: this.logOut
-            }
-        ];
+    public navigationItems = [
+        {
+            icon: 'group',
+            name: 'User list',
+            to: '/UserList',
+        },
+        {
+            icon: 'chat',
+            name: 'Dialogs',
+            to: '/Dialogs',
+        },
+        {
+            icon: 'settings',
+            name: 'Profile',
+            to: '/Profile',
+        },
+        {
+            icon: 'power_settings_new',
+            name: 'Sign out',
+            action: this.logOut,
+        },
+    ];
 
-        public minNavDraw = true;
+    public minNavDraw = true;
 
 //        mounted() {
 //            router.beforeEach((to, from, next) => {
@@ -103,9 +104,15 @@
 //            });
 //        }
 
-        logOut() {
-            this.$store.dispatch('signOut');
-            this.$router.push('/');
-        }
+    get myProfile(): User {
+        return this.$store.state.myAccount;
     }
+
+    public logOut() {
+        this.$store.dispatch('signOut');
+        this.$router.push('/');
+    }
+
+
+}
 </script>

@@ -6,17 +6,15 @@
 </template>
 
 <script lang="ts">
-
 import {Component, Vue, Watch} from 'vue-property-decorator';
 import Snackbar from './components/Snackbar.vue';
 
 @Component({
     components: {
-        Snackbar
-    }
+        Snackbar,
+    },
 })
 export default class App extends Vue {}
-
 </script>
 
 <style lang="scss">

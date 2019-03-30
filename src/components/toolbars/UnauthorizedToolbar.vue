@@ -38,6 +38,7 @@
             <v-list>
                 <v-list-tile
                     v-for="item in navigationItems"
+                    v-ripple
                     @click.stop=""
                     :to="item.to">
                     <v-list-tile-action>
@@ -71,13 +72,13 @@ export default class PublicToolbar extends Vue {
         {
             icon: 'exit_to_app',
             name: 'Sign in',
-            to: '/'
+            to: '/',
         },
         {
             icon: 'person_add',
             name: 'Sign up',
-            to: '/signUp'
-        }
+            to: '/SignUp',
+        },
     ];
 
 //    mounted() {

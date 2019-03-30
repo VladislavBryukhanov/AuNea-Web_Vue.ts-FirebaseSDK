@@ -9,7 +9,7 @@ export class Message {
     private _fileUrl: string;
 
 
-    construcor(content: string, dateOfSend: Date, read: boolean, to: string, who: string, fileMediaSides: string, fileType: string, fileUrl: string) {
+    public construcor(content: string, dateOfSend: Date, read: boolean, to: string, who: string, fileMediaSides: string, fileType: string, fileUrl: string) {
         this._content = content;
         this._dateOfSend = dateOfSend;
         this._read = read;
