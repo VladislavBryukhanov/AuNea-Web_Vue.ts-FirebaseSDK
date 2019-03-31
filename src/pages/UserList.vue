@@ -3,8 +3,7 @@
         elevation="6"
         class="userList">
         <v-list>
-            <template v-for="user in users">
-                <v-divider></v-divider>
+            <template v-for="(user, index) in users">
                 <v-list-tile
                         :key="user.uid"
                         avatar
@@ -22,6 +21,9 @@
                         <v-list-tile-sub-title v-html="user.nickname"></v-list-tile-sub-title>
                     </v-list-tile-content>
                 </v-list-tile>
+                <v-divider
+                    v-if="index < users.length - 1">
+                </v-divider>
             </template>
         </v-list>
     </v-sheet>
@@ -52,6 +54,6 @@ export default class UserList extends Vue {
 }
 </script>
 
-<style lang="scss">
+<style lang="scss" scoped>
     @import "../assets/scss/UserList";
 </style>

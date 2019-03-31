@@ -77,16 +77,21 @@ export default new Vuex.Store({
                 console.error(err);
             }
         },
-        async signUp({ commit, dispatch }) {
+        async signUp({ commit, dispatch }, login) {
             try {
                 await auth.signInWithPopup(provider);
                 const user = await getUserBuUid(auth.currentUser.uid);
-                if (user) {
-                    commit('snackbarShow', {message: 'Such user already exists.', duration: 3000});
-                    commit('signOut');
-                } else {
-                    // save new user to db e t c
+                if (!user) {
+                    const usersRef = database.ref('/Users').push();
+                    const user = {
+                        login,
+                        uid: auth.currentUser.uid
+                    };
+                    usersRef.set(user);
                     await dispatch('getProfile');
+                } else {
+                    commit('signOut');
+                    commit('snackbarShow', {message: 'Such user already exists.', duration: 3000});
                 }
             } catch (err) {
                 console.error(err);
@@ -117,6 +122,33 @@ export default new Vuex.Store({
             commit('signOut');
         },
 
+        editProfile() {
+
+        },
+
+    /*    watchNetworkStatus() {
+            const userRef = database.ref('/Users');
+            userRef
+                .orderByChild('uid')
+                .equalTo(auth.currentUser.uid)
+                .once('child_added', (userSnapshot) => {
+                    userRef
+                        .child(`${userSnapshot.key}/status`)
+                        .set('Online')
+                });
+        },
+        unwatchNetworkStatus() {
+            const userRef = database.ref('/Users');
+            userRef
+                .orderByChild('uid')
+                .equalTo(auth.currentUser.uid)
+                .once('child_added', (userSnapshot) => {
+                    userRef
+                        .child(`${userSnapshot.key}/status`)
+                        .set('Offline')
+                });
+        },*/
+
         getUsers({ state, commit }) {
             database
                 .ref('/Users')
@@ -146,11 +178,7 @@ const getUserBuUid = (uid) => {
             .orderByChild('uid')
             .equalTo(uid)
             .on('child_added', (userSnapshot) => {
-                if (userSnapshot.exists()) {
-                    resolve(userSnapshot!.val());
-                } else {
-                    reject();
-                }
+                resolve(userSnapshot!.val());
             });
     });
 };

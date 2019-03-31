@@ -1,0 +1,17 @@
+.profile {
+  padding: 32px;
+}
+
+.settingsHeader {
+  padding: 32px;
+  background-color: #282828;
+  .selectAvatar {
+    display: none;
+  }
+  .v-avatar {
+    cursor: pointer;
+  }
+  .v-icon {
+    display: inline-flex !important;
+  }
+}

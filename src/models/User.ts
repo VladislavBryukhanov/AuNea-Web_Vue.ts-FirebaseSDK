@@ -1,18 +1,20 @@
 export class User {
     private _login: string;
     private _nickname: string;
+    private _bio;
     private _registrationToken: string;
     private _status: string;
     private _uid: string;
     private _avatarUrl: string;
 
-    constructor(login: string, nickname: string, registrationToken: string, status: string, uid: string, avatarUrl: string) {
+    constructor(login: string, nickname: string, registrationToken: string, status: string, uid: string, avatarUrl: string, bio: string) {
         this._login = login;
         this._nickname = nickname;
         this._registrationToken = registrationToken;
         this._status = status;
         this._uid = uid;
         this._avatarUrl = avatarUrl;
+        this._bio = bio;
     }
 
     get login(): string {
@@ -61,5 +63,14 @@ export class User {
 
     set avatarUrl(value: string) {
         this._avatarUrl = value;
+    }
+
+
+    get bio() {
+        return this._bio;
+    }
+
+    set bio(value) {
+        this._bio = value;
     }
 }

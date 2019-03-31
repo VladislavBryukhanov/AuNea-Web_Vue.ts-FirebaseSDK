@@ -13,6 +13,9 @@ Vue.config.productionTip = false;
 // TODO customize theme
 Vue.use(Vuetify, {
     iconfont: 'md',
+    theme: {
+        primary: '#558DC4',
+    }
 });
 
 new Vue({

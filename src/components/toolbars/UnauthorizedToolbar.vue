@@ -51,11 +51,13 @@
             </v-list>
         </v-navigation-drawer>
 
-        <v-container fluid>
-            <v-flex xl4 offset-xl4 lg6 offset-lg3 md8 offset-md2 sm10 offset-sm1 xs12>
-                <router-view></router-view>
-            </v-flex>
-        </v-container>
+        <v-content>
+            <v-container fluid>
+                <v-flex xl4 offset-xl4 lg6 offset-lg3 md8 offset-md2 sm10 offset-sm1 xs12>
+                    <router-view></router-view>
+                </v-flex>
+            </v-container>
+        </v-content>
     </div>
 </template>
 

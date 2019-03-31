@@ -9,15 +9,17 @@
 -->
 
         <v-navigation-drawer
-            absolute permanent
+            app permanent clipped
             :mini-variant.sync="minNavDraw">
             <v-toolbar >
                 <v-list>
                     <v-list-tile
-                        v-ripple
+                        v-ripple="minNavDraw"
+                        @click.stop=""
                         avatar>
-                        <v-list-tile-avatar>
-                            <img :src="myProfile.avatarUrl"/>
+                        <v-list-tile-avatar
+                            @click.stop="minNavDraw = !minNavDraw">
+                            <img :src="myProfile.avatarUrl" />
                         </v-list-tile-avatar>
 
                         <v-list-tile-content>
@@ -51,15 +53,13 @@
             </v-list>
         </v-navigation-drawer>
 
-        <v-container fluid>
-            <v-flex xl4 offset-xl4 lg6 offset-lg3 md8 offset-md2 sm10 offset-sm1 xs12>
-
-                <router-view></router-view>
-            </v-flex>
-        </v-container>
-
-
-
+        <v-content>
+            <v-container fluid app fill-height>
+                <v-flex xl4 offset-xl4 lg6 offset-lg3 md8 offset-md2 sm10 offset-sm1 xs12>
+                    <router-view></router-view>
+                </v-flex>
+            </v-container>
+        </v-content>
     </div>
 </template>
 
@@ -81,7 +81,7 @@ export default class PublicToolbar extends Vue {
         {
             icon: 'chat',
             name: 'Dialogs',
-            to: '/Dialogs',
+            to: '/UserList2',
         },
         {
             icon: 'settings',
@@ -104,6 +104,16 @@ export default class PublicToolbar extends Vue {
 //            });
 //        }
 
+/*
+    mounted() {
+        this.$store.dispatch('watchNetworkStatus');
+    }
+
+    beforeDestroy() {
+        this.$store.dispatch('unwatchNetworkStatus');
+    }
+*/
+
     get myProfile(): User {
         return this.$store.state.myAccount;
     }
@@ -113,6 +123,9 @@ export default class PublicToolbar extends Vue {
         this.$router.push('/');
     }
 
-
 }
 </script>
+
+<style lang="scss">
+    @import "../../assets/scss/SideBar";
+</style>
