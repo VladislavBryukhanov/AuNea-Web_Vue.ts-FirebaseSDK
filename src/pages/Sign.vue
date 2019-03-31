@@ -6,10 +6,14 @@
                 <!--<img src="../assets/LastLogopsd.png"-->
                      <!--class="logo"/>-->
 
-                <form v-if="isSignUp" @submit.prevent="signUp">
+                <form
+                    v-if="isSignUp"
+                    @submit.prevent="signUp"
+                    v-model="isValid">
                     <v-text-field
                             v-model="login"
                             :counter="20"
+                            :rules="rules.loginRule"
                             label="Login"
                             required>
                     </v-text-field>
@@ -38,11 +42,21 @@ export default class Sign extends Vue {
     @Prop({type: Boolean, default: false})
     public isSignUp: boolean;
 
-    public login: string = '';
+    public login = '';
+
+    public isValid = false;
+    public rules = {
+        loginRule: [
+            v => !!v || 'Login is required field',
+            v => (v.length >= 3 && v.length <= 20) || 'Login must be longer then 3 and less then 20 characters'
+        ]
+    };
 
     public signUp() {
-        this.$store.dispatch('signUp', this.login)
-            .then(() => this.$router.push('/root'));
+        if(this.isValid) {
+            this.$store.dispatch('signUp', this.login)
+                .then(() => this.$router.push('/root'));
+        }
     }
 
     public signIn() {

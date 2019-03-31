@@ -69,11 +69,12 @@ export default new Vuex.Store({
         },
     },
     actions: {
-        async signIn({ dispatch }) {
+        async signIn({ commit, dispatch }) {
             try {
                 await auth.signInWithPopup(provider);
                 await dispatch('getProfile');
             } catch (err) {
+                commit('snackbarShow', {message: err.message, duration: 6000});
                 console.error(err);
             }
         },
@@ -94,6 +95,7 @@ export default new Vuex.Store({
                     commit('snackbarShow', {message: 'Such user already exists.', duration: 3000});
                 }
             } catch (err) {
+                commit('snackbarShow', {message: err.message, duration: 6000});
                 console.error(err);
             }
         },

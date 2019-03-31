@@ -77,16 +77,19 @@ export default class PublicToolbar extends Vue {
             icon: 'group',
             name: 'User list',
             to: '/UserList',
+            action: () => {}
         },
         {
             icon: 'chat',
             name: 'Dialogs',
             to: '/UserList2',
+            action: () => {}
         },
         {
             icon: 'settings',
             name: 'Profile',
             to: '/Profile',
+            action: () => {}
         },
         {
             icon: 'power_settings_new',

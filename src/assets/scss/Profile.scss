@@ -4,7 +4,11 @@
 
 .settingsHeader {
   padding: 32px;
+  min-height: 216px;
   background-color: #282828;
+  .avatar {
+    min-width: 132px;
+  }
   .selectAvatar {
     display: none;
   }
