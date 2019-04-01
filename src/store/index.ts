@@ -5,6 +5,8 @@ import {User} from '@/models/User';
 import {Dialog} from '@/models/Dialog';
 import {Message} from '@/models/Message';
 import {AuthStates} from '@/constants/auth';
+import uuid from 'uuid';
+import _ from 'lodash';
 
 Vue.use(Vuex);
 
@@ -14,6 +16,7 @@ const provider = new firebase.auth.GoogleAuthProvider();
 provider.setCustomParameters({
     prompt: 'select_account'
 });
+const storage = firebase.storage();
 
 /*
 const myAccount: User = null;
@@ -46,9 +49,6 @@ export default new Vuex.Store({
                 message,
                 duration,
             };
-            console.log(message);
-            console.log(duration);
-            console.log(state.snackbar);
         },
         getProfile(state, user: User) {
             state.authState = AuthStates.SignedIn;
@@ -57,6 +57,9 @@ export default new Vuex.Store({
         signOut(state) {
             state.myAccount = null;
             state.authState = AuthStates.SignedOut;
+        },
+        editProfile(state, changedUser) {
+            state.myAccount = changedUser;
         },
 
         getUsers(state, users: User[]) {
@@ -124,8 +127,51 @@ export default new Vuex.Store({
             commit('signOut');
         },
 
-        editProfile() {
+        async editProfile({ commit, state }, { changedUser, avatar }) {
 
+            let userRef = database.ref('/Users');
+
+            return new Promise((resolve, reject) => {
+                userRef
+                    .orderByChild('uid')
+                    .equalTo(auth.currentUser.uid)
+                    .once('child_added', async (userSnapshot) => {
+
+                        const { myAccount } = state;
+                        let fileUploading;
+                        userRef = userRef.child(`${userSnapshot.key}`);
+
+                        _.each(changedUser, (value, key) => {
+                            if (!_.isEqual(changedUser[key], myAccount[key])) {
+                                if (key === 'avatarUrl') {
+                                    const oldFileRef = storage.refFromURL(myAccount.avatarUrl);
+
+                                    const extension = avatar.type.split('/')[1];
+                                    const newFileRef = storage.ref().child(
+                                        `${auth.currentUser.email}/Avatar/${uuid.v4()}.${extension}`);
+
+                                    fileUploading = newFileRef.put(avatar)
+                                        .then(() => newFileRef.getDownloadURL())
+                                        .then(downloadUrl => {
+                                            changedUser.avatarUrl = downloadUrl;
+                                            userRef.child(key).set(downloadUrl);
+                                            oldFileRef.delete()
+                                                .catch(err => console.log(err));
+                                        });
+                                } else {
+                                    userRef.child(key).set(value);
+                                }
+                            }
+                        });
+
+                        if (fileUploading) {
+                            await fileUploading;
+                        }
+                        commit('editProfile', changedUser);
+                        resolve();
+
+                    });
+            });
         },
 
     /*    watchNetworkStatus() {

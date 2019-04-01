@@ -51,7 +51,7 @@
                             absolute
                             right
                             fab
-                            v-model="this.isValid"
+                            v-model="isValid"
                             :color="this.isValid ? 'primary' : 'error'">
                             <v-icon>close</v-icon>
                             <v-icon>done</v-icon>
@@ -118,7 +118,6 @@ import fileQuotas from "../constants/fileQuotas";
 @Component
 export default class Profile extends Vue {
 
-    public myUser: User = Object.assign({}, this.$store.state.myAccount);
     public profileChanged = false;
     public dialogOpened = false;
     public isValid = false;
@@ -134,12 +133,14 @@ export default class Profile extends Vue {
             v => v.length <= 400 || 'Bio must be less then 60 characters'
         ],
     };
-
     public themas = [
         'Default',
         'Material Light',
         'Material Dark',
     ];
+
+    public myUser: User = Object.assign({}, this.$store.state.myAccount);
+    public newAvatar: File;
 
     @Watch('myUser', { deep: true } )
     myUserChanged() {
@@ -147,7 +148,10 @@ export default class Profile extends Vue {
     }
 
     public editProfile() {
-        console.log(this.isValid);
+        if (this.isValid && this.profileChanged) {
+            this.$store.dispatch('editProfile', { changedUser: this.myUser, avatar: this.newAvatar })
+                .then(() => this.$router.back());
+        }
     }
 
     public onAvatarChange(e) {
@@ -157,8 +161,9 @@ export default class Profile extends Vue {
             return;
         }
 
+        this.newAvatar = avatarFile;
         const fileReader = new FileReader();
-        fileReader.onload = (e) => {
+        fileReader.onload = () => {
             this.myUser.avatarUrl = fileReader.result;
         };
         fileReader.readAsDataURL(avatarFile);

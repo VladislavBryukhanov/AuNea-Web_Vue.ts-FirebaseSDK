@@ -5,29 +5,30 @@
             <div class="sign">
                 <!--<img src="../assets/LastLogopsd.png"-->
                      <!--class="logo"/>-->
-
-                <form
+                <v-form
                     v-if="isSignUp"
                     @submit.prevent="signUp"
                     v-model="isValid">
                     <v-text-field
-                            v-model="login"
-                            :counter="20"
-                            :rules="rules.loginRule"
-                            label="Login"
-                            required>
+                        v-model="login"
+                        :counter="20"
+                        :rules="rules.loginRule"
+                        label="Login">
                     </v-text-field>
 
-                    <v-btn block type="submit">
+                    <v-btn
+                        block
+                        type="submit"
+                        v-model="isValid">
                         Sign up
                     </v-btn>
-                </form>
+                </v-form>
 
-                <form v-else @submit.prevent="signIn">
+                <v-form v-else @submit.prevent="signIn">
                     <v-btn block type="submit">
                         Sign in
                     </v-btn>
-                </form>
+                </v-form>
             </div>
         </v-sheet>
     </v-flex>
