@@ -111,7 +111,7 @@
 
 <script lang="ts">
 import {Component, Vue, Watch} from 'vue-property-decorator';
-import {User} from '../models/User';
+import {User} from '../models/User.interface';
 import _ from 'lodash';
 import fileQuotas from "../constants/fileQuotas";
 

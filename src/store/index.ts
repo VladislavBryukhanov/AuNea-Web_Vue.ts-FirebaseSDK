@@ -1,9 +1,9 @@
 import Vue from 'vue';
 import Vuex from 'vuex';
 import firebase from 'firebase';
-import {User} from '@/models/User';
-import {Dialog} from '@/models/Dialog';
-import {Message} from '@/models/Message';
+import {User} from '@/models/User.interface';
+import {Dialog} from '@/models/Dialog.interface';
+import {Message} from '@/models/Message.interface';
 import {AuthStates} from '@/constants/auth';
 import uuid from 'uuid';
 import _ from 'lodash';
@@ -68,7 +68,9 @@ export default new Vuex.Store({
         changeUser(state, changedUser: User) {
             const index = state.users.findIndex(
                 (item) => item.uid === changedUser.uid);
-            state.users.splice(index, 1, changedUser);
+            if (index !== -1) {
+                state.users.splice(index, 1, changedUser);
+            }
         },
     },
     actions: {

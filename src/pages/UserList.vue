@@ -18,7 +18,7 @@
 
                     <v-list-tile-content>
                         <v-list-tile-title v-html="user.login"></v-list-tile-title>
-                        <v-list-tile-sub-title v-html="user.nickname"></v-list-tile-sub-title>
+                        <v-list-tile-sub-title v-html="user.nickname && `@${user.nickname}`"></v-list-tile-sub-title>
                     </v-list-tile-content>
                 </v-list-tile>
                 <v-divider
@@ -32,6 +32,7 @@
 <script lang="ts">
 import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
 import {Component, Vue, Watch} from 'vue-property-decorator';
+import _ from 'lodash';
 
 @Component({
     components: {
@@ -43,7 +44,7 @@ export default class UserList extends Vue {
     //TODO define $store e.t.c prototype
     mounted() {
         // TODO implement lodash
-        if (this.$store.state.users.length === 0) {
+        if (_.isEmpty(this.$store.state.users)) {
             this.$store.dispatch('getUsers');
         }
     }

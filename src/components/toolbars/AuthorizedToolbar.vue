@@ -66,7 +66,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import router from '@/router';
-import {User} from "../../models/User";
+import {User} from "../../models/User.interface";
 
 @Component
 export default class PublicToolbar extends Vue {
