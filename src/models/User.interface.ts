@@ -1,9 +1,9 @@
 export interface User {
+    uid: string;
     login: string;
     nickname: string;
-    bio;
+    bio: string;
     registrationToken: string;
     status: string;
-    uid: string;
     avatarUrl: string | ArrayBuffer;
 }

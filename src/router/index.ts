@@ -8,8 +8,9 @@ Vue.use(Router);
 const UnauthorizedToolbar = () => import('@/components/toolbars/UnauthorizedToolbar.vue');
 const AuthorizedToolbar = () => import('@/components/toolbars/AuthorizedToolbar.vue');
 const Sign = () => import('@/pages/Sign.vue');
-const UserList = () => import('@/pages/UserList.vue');
 const Settings = () => import('@/pages/Profile.vue');
+const UserList = () => import('@/pages/UserList.vue');
+const DialogList = () => import('@/pages/DialogList.vue');
 
 const router = new Router ({
     mode: 'history',
@@ -51,17 +52,16 @@ const router = new Router ({
                     path: '/UserList',
                     component: UserList,
                     name: 'UserList',
-                    meta: {
-                        title: 'User list',
-                    },
+                },
+                {
+                    path: '/DialogList',
+                    component: DialogList,
+                    name: 'DialogList',
                 },
                 {
                     path: '/Profile',
                     component: Settings,
                     name: 'Profile',
-                    meta: {
-                        title: 'User list',
-                    },
                 },
             ],
         },

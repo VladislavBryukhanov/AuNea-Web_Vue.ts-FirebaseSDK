@@ -81,8 +81,8 @@ export default class PublicToolbar extends Vue {
         },
         {
             icon: 'chat',
-            name: 'Dialogs',
-            to: '/UserList2',
+            name: 'Dialog list',
+            to: '/DialogList',
             action: () => {}
         },
         {

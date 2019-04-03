@@ -72,6 +72,31 @@ export default new Vuex.Store({
                 state.users.splice(index, 1, changedUser);
             }
         },
+
+        appendDialog(state, dialog: Dialog) {
+            state.dialogs.push(dialog);
+        },
+        updateDialog(state, changedDialog) {
+            const index = state.dialogs.findIndex(
+                (item) => item.uid === changedDialog.uid);
+            if (index !== -1) {
+                const speaker = state.dialogs[index].speaker;
+                state.dialogs.splice(index, 1, {
+                    ...changedDialog,
+                    speaker
+                })
+            }
+        },
+        updateDialogSpeaker(state, { uid, changedSpeaker }) {
+            const index = state.dialogs.findIndex(
+                (item) => item.uid === uid);
+            if (index !== -1) {
+                state.dialogs.splice(index, 1, {
+                    ...state.dialogs[index],
+                    speaker: changedSpeaker
+                })
+            }
+        },
     },
     actions: {
         async signIn({ commit, dispatch }) {
@@ -86,7 +111,7 @@ export default new Vuex.Store({
         async signUp({ commit, dispatch }, login) {
             try {
                 await auth.signInWithPopup(provider);
-                const user = await getUserBuUid(auth.currentUser.uid);
+                const user = await getUserByUid(auth.currentUser.uid);
                 if (!user) {
                     const usersRef = database.ref('/Users').push();
                     const user = {
@@ -118,7 +143,7 @@ export default new Vuex.Store({
         },
         async getProfile({ commit }) {
             try {
-                const user = await getUserBuUid(auth.currentUser.uid);
+                const user = await getUserByUid(auth.currentUser.uid);
                 commit('getProfile', user);
             } catch (err) {
                 commit('snackbarShow', {message: 'Unauthorized', duration: 1500});
@@ -200,9 +225,8 @@ export default new Vuex.Store({
         },*/
 
         getUsers({ state, commit }) {
-            database
-                .ref('/Users')
-                .once('value', (usersSnapshot) => {
+            const userRef = database.ref('/Users');
+            userRef.once('value', (usersSnapshot) => {
                     const users = [];
                     usersSnapshot!.forEach((userSnap) => {
                         const user = userSnap.val();
@@ -212,22 +236,70 @@ export default new Vuex.Store({
                     });
                     commit('getUsers', users);
             });
-            database
-                .ref('/Users')
-                .on('child_changed', (userSnapshot) => {
+            userRef.on('child_changed', (userSnapshot) => {
                     commit('changeUser', userSnapshot!.val());
+            });
+        },
+        getDialogs({ state, commit }) {
+            const myUid = auth.currentUser.uid;
+            const dialogsRef = database
+                .ref('/Dialogs')
+                .orderByChild(`speakers/${myUid}`)
+                .equalTo(myUid);
+
+            dialogsRef.on('child_added', (dialogSnapshot) => {
+                const dialog = {
+                    uid: dialogSnapshot.key,
+                    ...dialogSnapshot.val(),
+                };
+
+                _.forOwn(dialog.speakers,(speakerUid) => {
+                    if (speakerUid !== auth.currentUser.uid) {
+
+                        database
+                            .ref('/Users')
+                            .orderByChild('uid')
+                            .equalTo(speakerUid)
+                            .on('value', (userSnapshot) => {
+                                userSnapshot.forEach((userSnap) => {
+                                    dialog.speaker = userSnap!.val();
+
+                                    if (state.dialogs.some(item => item.uid === dialog.uid)) {
+                                        console.log("test");
+                                        commit('updateDialogSpeaker', {
+                                            uid: dialog.uid,
+                                            changedSpeaker: userSnap!.val()
+                                        });
+                                    } else {
+                                        commit('appendDialog', dialog);
+                                    }
+                                });
+                            });
+                    }
+                });
+
+            });
+
+            dialogsRef.on('child_changed', (dialogSnapshot) => {
+                // срабатывает 2 раза
+                console.log("test");
+                const changedDialog = {
+                    uid: dialogSnapshot!.key,
+                    ...dialogSnapshot!.val(),
+                };
+                commit('updateDialog', changedDialog);
             });
         },
     },
 });
 
-const getUserBuUid = (uid) => {
+const getUserByUid = (uid) => {
     return new Promise((resolve, reject) => {
         database
             .ref('/Users')
             .orderByChild('uid')
             .equalTo(uid)
-            .on('child_added', (userSnapshot) => {
+            .once('child_added', (userSnapshot) => {
                 resolve(userSnapshot!.val());
             });
     });
