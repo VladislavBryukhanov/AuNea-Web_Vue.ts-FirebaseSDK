@@ -265,7 +265,6 @@ export default new Vuex.Store({
                                     dialog.speaker = userSnap!.val();
 
                                     if (state.dialogs.some(item => item.uid === dialog.uid)) {
-                                        console.log("test");
                                         commit('updateDialogSpeaker', {
                                             uid: dialog.uid,
                                             changedSpeaker: userSnap!.val()
@@ -279,10 +278,7 @@ export default new Vuex.Store({
                 });
 
             });
-
             dialogsRef.on('child_changed', (dialogSnapshot) => {
-                // срабатывает 2 раза
-                console.log("test");
                 const changedDialog = {
                     uid: dialogSnapshot!.key,
                     ...dialogSnapshot!.val(),

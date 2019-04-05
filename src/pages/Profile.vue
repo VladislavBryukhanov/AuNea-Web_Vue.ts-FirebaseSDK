@@ -1,5 +1,5 @@
 <template xmlns:v-slot="http://www.w3.org/1999/XSL/Transform">
-    <v-flex xs12 sm12 md8 offset-md2 lg8 offset-lg2 xl6 offset-xl-3>
+    <v-flex xs12 sm12 md8 offset-md2 lg8 offset-lg2 xl8 offset-xl-2>
         <v-sheet
             elevation="6">
             <v-form

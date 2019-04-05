@@ -15,6 +15,22 @@ Vue.use(Vuetify, {
     iconfont: 'md',
     theme: {
         primary: '#558DC4',
+        whiteShadow: '#f1f1f1',
+        solid_dark: '#282828',
+        solid_black: '#161616',
+        black_overlay: '#66000000',
+        dialogBack: '#c8000000',
+        borderColor: '#C8464646',
+        onlineColor: '#558DC4',
+        offlineColor: '#ffffff',
+        afkColor: '#FFF171',
+        incomingMessage: '#243443',
+        outcomeMessage: '#1A567B',
+        lightBlue: '#6B9BC2',
+        darkRed: '#a43931',
+        lightIonic: '#14aba8',
+        lincIonicColor: '#00aca2',
+        darkIonic: '#00726a',
     }
 });
 
