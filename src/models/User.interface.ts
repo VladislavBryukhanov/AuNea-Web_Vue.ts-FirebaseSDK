@@ -6,4 +6,5 @@ export interface User {
     registrationToken: string;
     status: string;
     avatarUrl: string | ArrayBuffer;
+    databaseRef: any;
 }

@@ -7,6 +7,7 @@ import {Message} from '@/models/Message.interface';
 import {AuthStates} from '@/constants/auth';
 import uuid from 'uuid';
 import _ from 'lodash';
+import moment from 'moment';
 
 Vue.use(Vuex);
 
@@ -141,100 +142,71 @@ export default new Vuex.Store({
                 });
             });
         },
-        async getProfile({ commit }) {
+        async getProfile({ state, commit }) {
             try {
                 const user = await getUserByUid(auth.currentUser.uid);
                 commit('getProfile', user);
+                watchNetworkStatus(state.myAccount);
             } catch (err) {
                 commit('snackbarShow', {message: 'Unauthorized', duration: 1500});
             }
         },
-        signOut({ commit }) {
+        signOut({ state, commit }) {
+
+            state.myAccount.databaseRef
+                .child('status')
+                .set(`Last seen at ${moment().format('HH:mm DD MMM')}`);
+
             auth.signOut();
             commit('signOut');
         },
 
         async editProfile({ commit, state }, { changedUser, avatar }) {
 
-            let userRef = database.ref('/Users');
+            const { myAccount } = state;
+            let fileUploading;
+            const userRef = state.myAccount.databaseRef;
 
-            return new Promise((resolve, reject) => {
-                userRef
-                    .orderByChild('uid')
-                    .equalTo(auth.currentUser.uid)
-                    .once('child_added', async (userSnapshot) => {
+            _.each(changedUser, (value, key) => {
+                if (!_.isEqual(changedUser[key], myAccount[key])) {
+                    if (key === 'avatarUrl') {
+                        const oldFileRef = storage.refFromURL(myAccount.avatarUrl);
 
-                        const { myAccount } = state;
-                        let fileUploading;
-                        userRef = userRef.child(`${userSnapshot.key}`);
+                        const extension = avatar.type.split('/')[1];
+                        const newFileRef = storage.ref().child(
+                            `${auth.currentUser.email}/Avatar/${uuid.v4()}.${extension}`);
 
-                        _.each(changedUser, (value, key) => {
-                            if (!_.isEqual(changedUser[key], myAccount[key])) {
-                                if (key === 'avatarUrl') {
-                                    const oldFileRef = storage.refFromURL(myAccount.avatarUrl);
-
-                                    const extension = avatar.type.split('/')[1];
-                                    const newFileRef = storage.ref().child(
-                                        `${auth.currentUser.email}/Avatar/${uuid.v4()}.${extension}`);
-
-                                    fileUploading = newFileRef.put(avatar)
-                                        .then(() => newFileRef.getDownloadURL())
-                                        .then(downloadUrl => {
-                                            changedUser.avatarUrl = downloadUrl;
-                                            userRef.child(key).set(downloadUrl);
-                                            oldFileRef.delete()
-                                                .catch(err => console.log(err));
-                                        });
-                                } else {
-                                    userRef.child(key).set(value);
-                                }
-                            }
-                        });
-
-                        if (fileUploading) {
-                            await fileUploading;
-                        }
-                        commit('editProfile', changedUser);
-                        resolve();
-
-                    });
+                        fileUploading = newFileRef.put(avatar)
+                            .then(() => newFileRef.getDownloadURL())
+                            .then(downloadUrl => {
+                                changedUser.avatarUrl = downloadUrl;
+                                userRef.child(key).set(downloadUrl);
+                                oldFileRef.delete()
+                                    .catch(err => console.log(err));
+                            });
+                    } else {
+                        userRef.child(key).set(value);
+                    }
+                }
             });
-        },
 
-    /*    watchNetworkStatus() {
-            const userRef = database.ref('/Users');
-            userRef
-                .orderByChild('uid')
-                .equalTo(auth.currentUser.uid)
-                .once('child_added', (userSnapshot) => {
-                    userRef
-                        .child(`${userSnapshot.key}/status`)
-                        .set('Online')
-                });
+            if (fileUploading) {
+                await fileUploading;
+            }
+            commit('editProfile', changedUser);
         },
-        unwatchNetworkStatus() {
-            const userRef = database.ref('/Users');
-            userRef
-                .orderByChild('uid')
-                .equalTo(auth.currentUser.uid)
-                .once('child_added', (userSnapshot) => {
-                    userRef
-                        .child(`${userSnapshot.key}/status`)
-                        .set('Offline')
-                });
-        },*/
 
         getUsers({ state, commit }) {
             const userRef = database.ref('/Users');
             userRef.once('value', (usersSnapshot) => {
-                    const users = [];
-                    usersSnapshot!.forEach((userSnap) => {
-                        const user = userSnap.val();
-                        if (user.uid !== state.myAccount.uid) {
-                            users.push(user);
-                        }
-                    });
-                    commit('getUsers', users);
+                const users = [];
+                usersSnapshot!.forEach((userSnap) => {
+                    const user = userSnap.val();
+                    if (user.uid !== state.myAccount.uid) {
+                        users.push(user);
+                    }
+                });
+                commit('getUsers', users);
             });
             userRef.on('child_changed', (userSnapshot) => {
                     commit('changeUser', userSnapshot!.val());
@@ -291,12 +263,32 @@ export default new Vuex.Store({
 
 const getUserByUid = (uid) => {
     return new Promise((resolve, reject) => {
-        database
-            .ref('/Users')
+        const usersRef = database.ref('/Users');
+
+        usersRef
             .orderByChild('uid')
             .equalTo(uid)
             .once('child_added', (userSnapshot) => {
-                resolve(userSnapshot!.val());
+                resolve({
+                    ...userSnapshot!.val(),
+                    databaseRef: usersRef.child(userSnapshot.key)
+                });
             });
     });
+};
+
+const watchNetworkStatus = (myAccount) => {
+    database
+        .ref('.info/connected')
+        .on('value', (snapshot) => {
+
+            if(snapshot.val()) {
+                const myProfileRef = myAccount.databaseRef.child('status');
+
+                myProfileRef.set('Online');
+                myProfileRef
+                    .onDisconnect()
+                    .set(`Last seen at ${moment().format('HH:mm, DD MMM')}`);
+            }
+        });
 };
