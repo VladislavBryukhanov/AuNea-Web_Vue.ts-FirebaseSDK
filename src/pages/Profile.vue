@@ -172,5 +172,5 @@ export default class Profile extends Vue {
 </script>
 
 <style lang="scss" scoped>
-    @import "../assets/scss/Profile";
+    @import "../assets/scss/pages/Profile";
 </style>

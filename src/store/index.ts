@@ -8,6 +8,7 @@ import {AuthStates} from '@/constants/auth';
 import uuid from 'uuid';
 import _ from 'lodash';
 import moment from 'moment';
+import Chat from "@/models/Chat.interface";
 
 Vue.use(Vuex);
 
@@ -36,10 +37,11 @@ export default new Vuex.Store({
 
         myAccount: null,
         authState: null,
+        interlocutor: null,
 
         users: [],
         dialogs: [],
-        messages: [],
+        currentChat: {},
     },
     // getters: {
     //     isAuthenticated: () => !!auth.currentUser
@@ -73,6 +75,12 @@ export default new Vuex.Store({
                 state.users.splice(index, 1, changedUser);
             }
         },
+        getInterlocutor(state, interlocutor) {
+            state.currentChat = {
+                ...state.currentChat,
+                interlocutor
+            };
+        },
 
         appendDialog(state, dialog: Dialog) {
             state.dialogs.push(dialog);
@@ -98,9 +106,12 @@ export default new Vuex.Store({
                 })
             }
         },
-        getChat(state, messages) {
-            console.log(messages)
-            state.messages = messages;
+        getChat(state, {messages, databaseRef}) {
+            state.currentChat = {
+                ...state.currentChat,
+                messages,
+                databaseRef
+            };
         }
     },
     actions: {
@@ -166,7 +177,6 @@ export default new Vuex.Store({
         },
 
         async editProfile({ commit, state }, { changedUser, avatar }) {
-
             const { myAccount } = state;
             let fileUploading;
             const userRef = state.myAccount.databaseRef;
@@ -213,7 +223,7 @@ export default new Vuex.Store({
                 commit('getUsers', users);
             });
             userRef.on('child_changed', (userSnapshot) => {
-                    commit('changeUser', userSnapshot!.val());
+                commit('changeUser', userSnapshot!.val());
             });
         },
         getDialogs({ state, commit }) {
@@ -262,16 +272,48 @@ export default new Vuex.Store({
                 commit('updateDialog', changedDialog);
             });
         },
-        async getChat({ commit }, chatId) {
+        async getInterlocutor({ commit }, chatId) {
             database
-                .ref(`/Messages/${chatId}`)
-                .on('value', (chatSnapshot) => {
-                    const messages = [];
-                    chatSnapshot.forEach((messageSnap) => {
-                        messages.push(messageSnap.val());
-                    });
-                    commit('getChat', messages);
-                })
+                .ref(`/Dialogs/${chatId}`)
+                .once('value', async (chatSnapshot) => {
+
+                    const { speakers } = chatSnapshot.val();
+
+                    for (let speaker in speakers) {
+                        if (speaker !== auth.currentUser.uid) {
+                            const usersRef = database.ref('/Users');
+                            usersRef
+                                .orderByChild('uid')
+                                .equalTo(speaker)
+                                .on('value', (usersSnapshot) => {
+                                    usersSnapshot.forEach(interlocutorSnap => {
+                                        commit('getInterlocutor', {
+                                            ...interlocutorSnap!.val(),
+                                            databaseRef: usersRef.child(interlocutorSnap.key)
+                                        });
+                                    })
+                                });
+                        }
+                    }
+                });
+        },
+        async getChat({ commit }, chatId) {
+            // FIXME
+            const chatRef = database.ref(`/Messages/${chatId}`);
+
+            chatRef.on('value', (chatSnapshot) => {
+                const messages = [];
+                chatSnapshot.forEach((messageSnap) => {
+                    messages.push(messageSnap.val());
+                });
+                commit('getChat', {
+                    messages,
+                    databaseRef: chatRef
+                });
+            })
+        },
+        async sendMessage({ commit }, message: Message) {
+
         }
     },
 });

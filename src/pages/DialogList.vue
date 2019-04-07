@@ -8,7 +8,7 @@
                     avatar
                     v-ripple
                     :to="{name: 'Chat', params: {id: dialog.uid}}">
-                <v-badge
+                    <v-badge
                         class="unreadCounter"
                         color="outcomeMessage"
                         v-model="$store.state.myAccount.uid !== dialog.lastMessage.who && dialog.unreadCounter > 0"
@@ -67,5 +67,5 @@ export default class DialogList extends Vue {
 </script>
 
 <style lang="scss">
-    @import '../assets/scss/DialogList';
+    @import '../assets/scss/pages/DialogList';
 </style>

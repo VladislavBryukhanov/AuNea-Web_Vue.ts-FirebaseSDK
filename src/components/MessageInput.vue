@@ -1,5 +1,8 @@
 <template>
     <v-form class="messageInput" @submit="sendMessage()" >
+        <v-btn flat icon :disabled="isDisabled">
+            <v-icon>attach_file</v-icon>
+        </v-btn>
         <input
             v-model.trim="messageContent"
             placeholder="Enter message"/>
@@ -20,12 +23,16 @@ export default class Chat extends Vue {
     @Prop(Boolean)
     public isDisabled: boolean;
 
+    @Prop(String)
+    public interlocutorUid: string;
+
     sendMessage() {
+        this.$store.dispatch('interlocutorUid', this.interlocutorUid)
         console.log("SEND")
     }
 }
 </script>
 
 <style lang="scss">
-    @import "../assets/scss/MessageInput";
+    @import "../assets/scss/components/MessageInput";
 </style>

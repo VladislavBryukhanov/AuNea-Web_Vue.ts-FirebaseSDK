@@ -68,5 +68,5 @@ export default class Sign extends Vue {
 </script>
 
 <style lang="scss">
-    @import url('../assets/scss/Sign.scss');
+    @import url('../assets/scss/pages/Sign.scss');
 </style>

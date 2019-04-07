@@ -3,7 +3,7 @@
   height: 92vh;
 
   .messagesContent {
-    height: 84vh;
+    height: 76vh;
     overflow: auto;
 
     .incoming {
@@ -34,6 +34,7 @@
         color: white;
         border-radius: 6px;
         max-width: 65%;
+        word-wrap: break-word;
 
         img {
           max-width: 100%;

@@ -55,5 +55,5 @@ export default class UserList extends Vue {
 </script>
 
 <style lang="scss" scoped>
-    @import "../assets/scss/UserList";
+    @import "../assets/scss/pages/UserList";
 </style>

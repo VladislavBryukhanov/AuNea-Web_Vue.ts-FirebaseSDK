@@ -130,5 +130,5 @@ export default class PublicToolbar extends Vue {
 </script>
 
 <style lang="scss">
-    @import "../../assets/scss/SideBar";
+    @import "../../assets/scss/components/SideBar";
 </style>

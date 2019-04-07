@@ -28,5 +28,5 @@ export default class UserNetworkStatus extends Vue {
 </script>
 
 <style lang="scss" scoped>
-    @import "../assets/scss/UserNetworkStatus";
+    @import "../assets/scss/components/UserNetworkStatus";
 </style>

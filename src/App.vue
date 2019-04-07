@@ -21,5 +21,5 @@ export default class App extends Vue {}
 
 <style lang="scss">
     // Add unauth intersepter
-    @import url('./assets/scss/App.scss');
+    @import url('assets/scss/components/App.scss');
 </style>
