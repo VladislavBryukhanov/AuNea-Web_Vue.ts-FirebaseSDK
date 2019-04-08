@@ -39,11 +39,30 @@
                 <div class="message"
                     :class="isMyMessage(message.who) ? 'outcome' : 'incoming'">
                     <!--<div class="arrow-left"></div>-->
-                    <span class="content">
-                        {{message.content}}
-                        <img v-if="isImage(message.fileType)"
-                            :src="message.fileUrl"/>
-                    </span>
+
+
+                    <v-menu
+                        transition="slide-y-transition"
+                        bottom>
+                        <template v-slot:activator="{ on }">
+
+                            <span class="content" v-on="on">
+                                {{message.content}}
+                                <img v-if="isImage(message.fileType)"
+                                     :src="message.fileUrl"/>
+                            </span>
+
+                        </template>
+                        <v-list>
+                            <v-list-tile
+                                v-for="(item, i) in menuOptions"
+                                :key="i"
+                                @click="">
+                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                            </v-list-tile>
+                        </v-list>
+                    </v-menu>
+
                     <div class="dateOfSend">
                         <div>{{formatDateTime(message.dateOfSend)}}</div>
                         <div>{{formatDateDay(message.dateOfSend)}}</div>
@@ -53,13 +72,13 @@
         </div>
         <MessageInput
             :isDisabled="isMessagesFetched()"
-            :interlocutor="interlocutorUid">
+            :interlocutorUid="interlocutorUid">
         </MessageInput>
     </v-sheet>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+    import {Component, Vue} from 'vue-property-decorator';
 import MessageInput from '@/components/MessageInput.vue';
 import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
 import moment from 'moment';
@@ -72,6 +91,20 @@ import _ from 'lodash';
     },
 })
 export default class Chat extends Vue {
+
+    public menuOptions = [
+        {
+            title: 'Delete',
+        },
+        {
+            title: 'Edit',
+        }
+    ];
+
+    updated() {
+        const container = this.$el.querySelector('.messagesContent');
+        container.scrollTop = container.scrollHeight;
+    }
 
     mounted() {
         this.$store.dispatch('getInterlocutor', this.interlocutorUid);
@@ -97,7 +130,7 @@ export default class Chat extends Vue {
     }
 
     public formatDateTime(date) {
-        return moment(date).format('HH:MM:SS')
+        return moment(date).format('hh:mm:ss')
     }
 
     public formatDateDay(date) {

@@ -312,7 +312,12 @@ export default new Vuex.Store({
                 });
             })
         },
-        async sendMessage({ commit }, message: Message) {
+        async sendMessage({ state, commit }, message: Message) {
+            const { databaseRef } = state.currentChat;
+            databaseRef.push().set(message);
+            // commit('sendMessage')
+        },
+        async removeMessage({ state }, uid) {
 
         }
     },

@@ -1,6 +1,6 @@
 export interface Message {
     content: string;
-    dateOfSend: Date;
+    dateOfSend: any;
     read: boolean;
     to: string;
     who: string;
