@@ -17,6 +17,7 @@ provider.setCustomParameters({
     prompt: 'select_account'
 });
 const storage = firebase.storage();
+const messaging = firebase.messaging();
 
 /*
 const myAccount: User = null;
@@ -145,10 +146,12 @@ export default new Vuex.Store({
             try {
                 const user = await getUserByUid(auth.currentUser.uid);
                 commit('getProfile', user);
+                await initNotificationService();
             } catch (err) {
                 commit('snackbarShow', {message: 'Unauthorized', duration: 1500});
             }
         },
+
         signOut({ commit }) {
             auth.signOut();
             commit('signOut');
@@ -299,4 +302,46 @@ const getUserByUid = (uid) => {
                 resolve(userSnapshot!.val());
             });
     });
+};
+
+const initNotificationService = async () => {
+
+    await messaging.requestPermission();
+    saveNotificationToken();
+
+    messaging.onTokenRefresh(() => {
+        saveNotificationToken();
+    });
+
+    messaging.onMessage((msg) => {
+        console.log('test');
+        const { sender, content, tag } = msg.data;
+        const senderUser = JSON.parse(sender);
+
+        const notificationTitle = senderUser.login;
+        const notificationOptions = {
+            tag,
+            renotify: true,
+            body: content,
+            icon: senderUser.avatarUrl
+        };
+        new Notification(notificationTitle, notificationOptions);
+    });
+};
+
+const saveNotificationToken = () => {
+    const usersRef = database.ref('/Users');
+    usersRef
+        .orderByChild('uid')
+        .equalTo(auth.currentUser.uid)
+        .once('child_added', async(userSnapshot) => {
+            const newToken = await messaging.getToken();
+            const currentToken = userSnapshot.child('webNotificationToken').val();
+
+            if (newToken !== currentToken) {
+                usersRef
+                    .child(`${userSnapshot.key}/webNotificationToken`)
+                    .set(newToken);
+            }
+        });
 };
