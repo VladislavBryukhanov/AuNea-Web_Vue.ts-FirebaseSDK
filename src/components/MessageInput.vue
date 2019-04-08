@@ -3,7 +3,7 @@
         <input
             v-model.trim="messageContent"
             placeholder="Enter message"/>
-        <v-btn flat icon>
+        <v-btn flat icon :disabled="isDisabled">
             <v-icon>send</v-icon>
         </v-btn>
     </v-form>
@@ -11,11 +11,14 @@
 
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue, Prop } from 'vue-property-decorator';
 
 @Component
 export default class Chat extends Vue {
     public messageContent = '';
+
+    @Prop(Boolean)
+    public isDisabled: boolean;
 
     sendMessage() {
         console.log("SEND")

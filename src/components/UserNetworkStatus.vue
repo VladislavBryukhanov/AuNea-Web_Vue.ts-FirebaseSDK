@@ -1,5 +1,5 @@
 <template>
-    <span class="onlineStatus" v-bind:class="statusIndicator"></span>
+    <span class="onlineStatus" :class="statusIndicator"></span>
 </template>
 
 <script lang="ts">

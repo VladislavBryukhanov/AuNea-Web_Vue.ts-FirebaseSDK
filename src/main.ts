@@ -19,6 +19,7 @@ Vue.use(Vuetify, {
         solid_dark: '#282828',
         solid_black: '#161616',
         onlineColor: '#558DC4',
+        darkerGrey: '#aaa',
         offlineColor: '#ffffff',
         afkColor: '#FFF171',
         incomingMessage: '#243443',

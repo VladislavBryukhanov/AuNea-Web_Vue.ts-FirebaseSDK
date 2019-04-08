@@ -7,8 +7,7 @@
                 <v-list-tile
                     :key="user.uid"
                     avatar
-                    v-ripple
-                    :to="{name: 'Chat', params: {id: user.uid}}">
+                    v-ripple>
                 <!--FIXME ripple color is not changing to custom (light grey)-->
 
                     <v-list-tile-avatar>
