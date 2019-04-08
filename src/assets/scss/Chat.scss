@@ -1,0 +1,38 @@
+.chat.theme--light.v-sheet {
+  background: rgba(0, 0, 0, .7);
+  max-height: 92vh;
+
+  .messagesContent {
+    max-height: 84vh;
+    overflow: auto;
+
+    .incoming {
+      .content {
+        background-color: #243443;
+      }
+    }
+    .outcome {
+      text-align: right;
+      .content {
+        background-color: #1A567B;
+      }
+    }
+    .message {
+      margin: 20px 10px;
+
+      .content {
+        border: 1px solid #282828;
+        padding: 8px;
+        color: white;
+        border-radius: 4px;
+      }
+      .arrow-left {
+        width: 0;
+        height: 0;
+        border-top: 10px solid transparent;
+        border-bottom: 10px solid transparent;
+        border-right:10px solid #1A567B;
+      }
+    }
+  }
+}

@@ -7,8 +7,8 @@
                     :key="index"
                     avatar
                     v-ripple
-                    @click="">
-                    <v-badge
+                    :to="{name: 'Chat', params: {id: dialog.uid}}">
+                <v-badge
                         class="unreadCounter"
                         color="outcomeMessage"
                         v-model="$store.state.myAccount.uid !== dialog.lastMessage.who && dialog.unreadCounter > 0"
@@ -22,7 +22,7 @@
 
                     <v-list-tile-content>
                         <v-list-tile-title>{{dialog.speaker.login}}</v-list-tile-title>
-                        <v-list-tile-sub-title>{{dialog.lastMessage.content}}</v-list-tile-sub-title>
+                        <v-list-tile-sub-title>{{dialog.lastMessage.fileType || dialog.lastMessage.content}}</v-list-tile-sub-title>
                     </v-list-tile-content>
                     <v-list-tile-action>
                         <v-list-tile-action-text>{{formatDate(dialog)}}</v-list-tile-action-text>
@@ -42,13 +42,14 @@ import { Component, Vue, Watch } from 'vue-property-decorator';
 import UserNetworkStatus from '@/components/UserNetworkStatus.vue'
 import { Dialog } from "../models/Dialog.interface";
 import moment from 'moment';
+import _ from 'lodash';
 
 @Component({
     components: {
         UserNetworkStatus
     }
 })
-export default class DialogList {
+export default class DialogList extends Vue {
     mounted() {
         if (_.isEmpty(this.dialogs)) {
             this.$store.dispatch('getDialogs');

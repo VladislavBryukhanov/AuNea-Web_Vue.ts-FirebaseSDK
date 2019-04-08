@@ -38,8 +38,8 @@ export default new Vuex.Store({
         authState: null,
 
         users: [],
-        messages: [],
         dialogs: [],
+        messages: [],
     },
     // getters: {
     //     isAuthenticated: () => !!auth.currentUser
@@ -98,6 +98,10 @@ export default new Vuex.Store({
                 })
             }
         },
+        getChat(state, messages) {
+            console.log(messages)
+            state.messages = messages;
+        }
     },
     actions: {
         async signIn({ commit, dispatch }) {
@@ -258,6 +262,17 @@ export default new Vuex.Store({
                 commit('updateDialog', changedDialog);
             });
         },
+        async getChat({ commit }, chatId) {
+            database
+                .ref(`/Messages/${chatId}`)
+                .on('value', (chatSnapshot) => {
+                    const messages = [];
+                    chatSnapshot.forEach((messageSnap) => {
+                        messages.push(messageSnap.val());
+                    });
+                    commit('getChat', messages);
+                })
+        }
     },
 });
 

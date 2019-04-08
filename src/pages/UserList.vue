@@ -5,10 +5,10 @@
         <v-list>
             <template v-for="(user, index) in users">
                 <v-list-tile
-                        :key="user.uid"
-                        avatar
-                        v-ripple
-                        @click="">
+                    :key="user.uid"
+                    avatar
+                    v-ripple
+                    :to="{name: 'Chat', params: {id: user.uid}}">
                 <!--FIXME ripple color is not changing to custom (light grey)-->
 
                     <v-list-tile-avatar>

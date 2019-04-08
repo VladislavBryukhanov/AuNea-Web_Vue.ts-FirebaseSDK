@@ -11,6 +11,7 @@ const Sign = () => import('@/pages/Sign.vue');
 const Settings = () => import('@/pages/Profile.vue');
 const UserList = () => import('@/pages/UserList.vue');
 const DialogList = () => import('@/pages/DialogList.vue');
+const Chat = () => import('@/pages/Chat.vue');
 
 const router = new Router ({
     mode: 'history',
@@ -57,6 +58,11 @@ const router = new Router ({
                     path: '/DialogList',
                     component: DialogList,
                     name: 'DialogList',
+                },
+                {
+                    path: '/Chat/:id',
+                    component: Chat,
+                    name: 'Chat'
                 },
                 {
                     path: '/Profile',
