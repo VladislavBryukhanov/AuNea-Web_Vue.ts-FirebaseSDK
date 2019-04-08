@@ -1,4 +1,5 @@
 export interface Message {
+    uid: string;
     content: string;
     dateOfSend: any;
     read: boolean;

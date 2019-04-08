@@ -42,22 +42,21 @@
 
 
                     <v-menu
-                        transition="slide-y-transition"
-                        bottom>
+                        bottom
+                        transition="slide-y-transition">
                         <template v-slot:activator="{ on }">
-
-                            <span class="content" v-on="on">
+                            <span class="content" v-on="on" v-ripple>
                                 {{message.content}}
                                 <img v-if="isImage(message.fileType)"
                                      :src="message.fileUrl"/>
                             </span>
-
                         </template>
+
                         <v-list>
                             <v-list-tile
                                 v-for="(item, i) in menuOptions"
                                 :key="i"
-                                @click="">
+                                @click="item.action(message.uid)">
                                 <v-list-tile-title>{{ item.title }}</v-list-tile-title>
                             </v-list-tile>
                         </v-list>
@@ -72,7 +71,7 @@
         </div>
         <MessageInput
             :isDisabled="isMessagesFetched()"
-            :interlocutorUid="interlocutorUid">
+            :interlocutor="interlocutor">
         </MessageInput>
     </v-sheet>
 </template>
@@ -94,10 +93,12 @@ export default class Chat extends Vue {
 
     public menuOptions = [
         {
-            title: 'Delete',
+            title: 'Edit',
+            action: () => null
         },
         {
-            title: 'Edit',
+            title: 'Delete',
+            action: (uid) => this.deleteMessage(uid)
         }
     ];
 
@@ -107,11 +108,15 @@ export default class Chat extends Vue {
     }
 
     mounted() {
-        this.$store.dispatch('getInterlocutor', this.interlocutorUid);
-        this.$store.dispatch('getChat', this.interlocutorUid);
+        this.$store.dispatch('getInterlocutor', this.dialogUid);
+        this.$store.dispatch('getChat', this.dialogUid);
     }
 
-    get interlocutorUid() {
+   beforeDestroy() {
+        this.$store.dispatch('disposeChat');
+   }
+
+    get dialogUid() {
         return this.$route.params.id;
     }
     get messages() {
@@ -139,6 +144,10 @@ export default class Chat extends Vue {
 
     public isImage(fileType) {
         return fileType === 'image';
+    }
+
+    public deleteMessage(uid) {
+        this.$store.dispatch('deleteMessage', uid);
     }
 }
 </script>

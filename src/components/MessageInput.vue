@@ -20,6 +20,7 @@
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import moment from 'moment';
 import _ from 'lodash';
+import {User} from "../models/User.interface";
 
 @Component
 export default class Chat extends Vue {
@@ -28,22 +29,22 @@ export default class Chat extends Vue {
     @Prop(Boolean)
     public isDisabled: boolean;
 
-    @Prop(String)
-    public interlocutorUid: string;
+    @Prop(User)
+    public interlocutor: User;
 
-    sendMessage() {
+    public sendMessage() {
         if (_.isEmpty(this.messageContent.trim())) {
             return;
         }
         const  msg = {
             who: this.$store.state.myAccount.uid,
-            to: this.interlocutorUid,
+            to: this.interlocutor.uid,
             content: this.messageContent,
             dateOfSend: moment().toObject(),
             read: false
         };
-        this.$store.dispatch('sendMessage', msg);
         this.messageContent = '';
+        this.$store.dispatch('sendMessage', msg);
     }
 }
 </script>

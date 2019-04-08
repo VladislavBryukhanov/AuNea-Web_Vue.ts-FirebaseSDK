@@ -112,6 +112,9 @@ export default new Vuex.Store({
                 messages,
                 databaseRef
             };
+        },
+        disposeChat(state) {
+            state.currentChat = {};
         }
     },
     actions: {
@@ -304,7 +307,7 @@ export default new Vuex.Store({
             chatRef.on('value', (chatSnapshot) => {
                 const messages = [];
                 chatSnapshot.forEach((messageSnap) => {
-                    messages.push(messageSnap.val());
+                    messages.push({...messageSnap.val(), uid: messageSnap.key});
                 });
                 commit('getChat', {
                     messages,
@@ -312,13 +315,18 @@ export default new Vuex.Store({
                 });
             })
         },
-        async sendMessage({ state, commit }, message: Message) {
+        async disposeChat({ state, commit }) {
+            state.currentChat.databaseRef.off();
+            state.currentChat.interlocutor.databaseRef.off();
+            commit('disposeChat');
+        },
+        sendMessage({ state }, message: Message) {
             const { databaseRef } = state.currentChat;
             databaseRef.push().set(message);
-            // commit('sendMessage')
         },
-        async removeMessage({ state }, uid) {
-
+        deleteMessage({ state }, uid) {
+            const { databaseRef } = state.currentChat;
+            databaseRef.child(uid).remove();
         }
     },
 });
