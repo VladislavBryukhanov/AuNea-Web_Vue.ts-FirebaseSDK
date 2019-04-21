@@ -19,7 +19,6 @@
       display: flex;
       flex-direction: row-reverse;
       .content {
-        cursor: pointer;
         background-color: #1A567B;
       }
       .dateOfSend {
@@ -31,6 +30,7 @@
 
 
       .content {
+        cursor: pointer;
         border: 1px solid #282828;
         padding: 4px 8px;
         color: white;

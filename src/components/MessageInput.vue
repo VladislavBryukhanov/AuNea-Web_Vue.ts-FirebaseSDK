@@ -32,6 +32,10 @@ export default class Chat extends Vue {
     @Prop(User)
     public interlocutor: User;
 
+    public sendFile() {
+        this.$store.dispatch('sendFile')
+    }
+
     public sendMessage() {
         if (_.isEmpty(this.messageContent.trim())) {
             return;

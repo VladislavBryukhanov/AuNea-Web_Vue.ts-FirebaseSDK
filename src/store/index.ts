@@ -19,6 +19,7 @@ provider.setCustomParameters({
     prompt: 'select_account'
 });
 const storage = firebase.storage();
+const messaging = firebase.messaging();
 
 /*
 const myAccount: User = null;
@@ -37,11 +38,10 @@ export default new Vuex.Store({
 
         myAccount: null,
         authState: null,
-        interlocutor: null,
 
         users: [],
         dialogs: [],
-        currentChat: {},
+        currentChat: [],
     },
     // getters: {
     //     isAuthenticated: () => !!auth.currentUser
@@ -164,13 +164,13 @@ export default new Vuex.Store({
             try {
                 const user = await getUserByUid(auth.currentUser.uid);
                 commit('getProfile', user);
+                await initNotificationService();
                 watchNetworkStatus(state.myAccount);
             } catch (err) {
                 commit('snackbarShow', {message: 'Unauthorized', duration: 1500});
             }
         },
         signOut({ state, commit }) {
-
             state.myAccount.databaseRef
                 .child('status')
                 .set(`Last seen at ${moment().format('HH:mm DD MMM')}`);
@@ -327,6 +327,9 @@ export default new Vuex.Store({
         deleteMessage({ state }, uid) {
             const { databaseRef } = state.currentChat;
             databaseRef.child(uid).remove();
+        },
+        sendFile({ state }, uid) {
+
         }
     },
 });
@@ -359,6 +362,49 @@ const watchNetworkStatus = (myAccount) => {
                 myProfileRef
                     .onDisconnect()
                     .set(`Last seen at ${moment().format('HH:mm, DD MMM')}`);
+            }
+        });
+};
+
+const initNotificationService = async () => {
+
+    await messaging.requestPermission();
+    saveNotificationToken();
+
+    messaging.onTokenRefresh(() => {
+        saveNotificationToken();
+    });
+
+    messaging.onMessage((msg) => {
+        const { sender, content, tag } = msg.data;
+        const senderUser = JSON.parse(sender);
+
+        if (senderUser.uid === auth.currentUser.uid) { return; }
+
+        const notificationTitle = senderUser.login;
+        const notificationOptions = {
+            tag,
+            renotify: true,
+            body: content,
+            icon: senderUser.avatarUrl
+        };
+        new Notification(notificationTitle, notificationOptions);
+    });
+};
+
+const saveNotificationToken = () => {
+    const usersRef = database.ref('/Users');
+    usersRef
+        .orderByChild('uid')
+        .equalTo(auth.currentUser.uid)
+        .once('child_added', async(userSnapshot) => {
+            const newToken = await messaging.getToken();
+            const currentToken = userSnapshot.child('webNotificationToken').val();
+
+            if (newToken !== currentToken) {
+                usersRef
+                    .child(`${userSnapshot.key}/webNotificationToken`)
+                    .set(newToken);
             }
         });
 };
