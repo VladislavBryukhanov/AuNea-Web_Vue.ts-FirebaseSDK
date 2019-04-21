@@ -30,9 +30,10 @@
 
 <script lang="ts">
 import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
-import {Component, Vue, Watch} from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import { State, Action } from 'vuex-class';
 import _ from 'lodash';
-import {User} from '../models/User.interface';
+import { User } from '../models/User.interface';
 
 @Component({
     components: {
@@ -41,15 +42,16 @@ import {User} from '../models/User.interface';
 })
 export default class UserList extends Vue {
 
-    // TODO define $store e.t.c prototype
+    @State('users', { namespace: 'UserList' })
+    users: User[];
+
+    @Action('getUsers', { namespace: 'UserList' })
+    getUsers;
+
     public mounted() {
         if (_.isEmpty(this.users)) {
-            this.$store.dispatch('UserList/getUsers');
+            this.getUsers();
         }
-    }
-
-    get users(): User[] {
-        return this.$store.state.UserList.users;
     }
 }
 </script>

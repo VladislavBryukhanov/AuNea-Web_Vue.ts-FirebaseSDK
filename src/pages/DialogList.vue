@@ -39,6 +39,7 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Action, State } from 'vuex-class';
 import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
 import { Dialog } from '../models/Dialog.interface';
 import moment from 'moment';
@@ -50,9 +51,18 @@ import _ from 'lodash';
     },
 })
 export default class DialogList extends Vue {
+
+    @State('dialogs', { namespace: 'DialogList' })
+    dialogs: Dialog[];
+    @State('myAccount', { namespace: 'Auth' })
+    myAccount: string;
+
+    @Action('getDialogs', { namespace: 'DialogList' })
+    getDialogs;
+
     public mounted() {
         if (_.isEmpty(this.dialogs)) {
-            this.$store.dispatch('DialogList/getDialogs');
+            this.getDialogs();
         }
     }
 
@@ -60,12 +70,8 @@ export default class DialogList extends Vue {
         return moment(dialog.lastMessage.dateOfSend).format('DD MMM');
     }
 
-    get dialogs() {
-        return this.$store.state.DialogList.dialogs;
-    }
-
     get myUid() {
-        return this.$store.state.Auth.myAccount.uid;
+        return this.myAccount.uid;
     }
 }
 </script>

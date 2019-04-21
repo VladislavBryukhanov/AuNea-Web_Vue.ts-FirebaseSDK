@@ -14,6 +14,7 @@
             <v-toolbar >
                 <v-list>
                     <v-list-tile
+                        v-if="myProfile"
                         v-ripple="minNavDraw"
                         @click.stop=""
                         avatar>
@@ -65,12 +66,19 @@
 
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
+import { Action, State } from 'vuex-class';
 import router from '@/router';
-import {User} from '../../models/User.interface';
+import { User } from '../../models/User.interface';
 
 @Component
 export default class PublicToolbar extends Vue {
-//        public pageName: string = 'AuNea2';
+
+
+    @State('myAccount', { namespace: 'Auth' })
+    myProfile: User;
+
+    @Action('signOut', { namespace: 'Auth' })
+    signOut;
 
     public navigationItems = [
         {
@@ -107,13 +115,9 @@ export default class PublicToolbar extends Vue {
 //            });
 //        }
 
-    get myProfile(): User {
-        return this.$store.state.Auth.myAccount || {};
-    }
-
     public logOut() {
-        this.$store.dispatch('Auth/signOut')
-            .then(() => this.$router.push('/'));
+        this.signOut();
+        this.$router.push('/');
     }
 
 }

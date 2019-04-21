@@ -77,7 +77,9 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue} from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
+import { State, Action } from 'vuex-class';
+import { User } from '@/models/User.interface';
 import MessageInput from '@/components/MessageInput.vue';
 import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
 import moment from 'moment';
@@ -90,6 +92,24 @@ components: {
 },
 })
 export default class Chat extends Vue {
+
+    @State('myAccount', { namespace: 'Auth' })
+    private myAccount: User;
+
+    @State('currentChat', { namespace: 'Chat' })
+    currentChat: Chat;
+
+    @Action('getInterlocutor', { namespace: 'Chat' })
+    private getInterlocutor;
+
+    @Action('getChat', { namespace: 'Chat' })
+    private getChat;
+
+    @Action('disposeChat', { namespace: 'Chat' })
+    private disposeChat;
+
+    @Action('deleteMessage', { namespace: 'Chat' })
+    public deleteMessage;
 
     public menuOptions = [
         {
@@ -108,25 +128,25 @@ export default class Chat extends Vue {
     }
 
     public mounted() {
-        this.$store.dispatch('Chat/getInterlocutor', this.dialogUid);
-        this.$store.dispatch('Chat/getChat', this.dialogUid);
+        this.getInterlocutor(this.dialogUid);
+        this.getChat(this.dialogUid);
     }
 
     public beforeDestroy() {
-        this.$store.dispatch('Chat/disposeChat');
+        this.disposeChat();
     }
 
     get dialogUid() {
         return this.$route.params.id;
     }
     get messages() {
-        if (this.$store.state.Chat.currentChat) {
-            return this.$store.state.Chat.currentChat.messages;
+        if (this.currentChat) {
+            return this.currentChat.messages;
         }
     }
     get interlocutor() {
-        if (this.$store.state.Chat.currentChat) {
-            return this.$store.state.Chat.currentChat.interlocutor;
+        if (this.currentChat) {
+            return this.currentChat.interlocutor;
         }
     }
 
@@ -135,7 +155,13 @@ export default class Chat extends Vue {
     }
 
     public isMyMessage(owner) {
-        return this.$store.state.Auth.myAccount.uid === owner;
+        if (this.myAccount) {
+            return this.myAccount.uid === owner;
+        }
+    }
+
+    public isImage(fileType) {
+        return fileType === 'image';
     }
 
     public formatDateTime(date) {
@@ -144,14 +170,6 @@ export default class Chat extends Vue {
 
     public formatDateDay(date) {
         return moment(date).format('DD MMM');
-    }
-
-    public isImage(fileType) {
-        return fileType === 'image';
-    }
-
-    public deleteMessage(uid) {
-        this.$store.dispatch('Chat/deleteMessage', uid);
     }
 }
 </script>

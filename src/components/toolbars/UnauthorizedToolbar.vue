@@ -67,7 +67,6 @@ import router from '@/router';
 
 @Component
 export default class PublicToolbar extends Vue {
-//    public pageName: string = 'AuNea';
     public minNavDraw = true;
 
     public navigationItems = [

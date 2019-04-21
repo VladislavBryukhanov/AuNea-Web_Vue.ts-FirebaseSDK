@@ -75,19 +75,18 @@ const router = new Router ({
 });
 
 router.beforeEach(async (to, from, next) => {
-    const { authState } = store.state.Auth;
     let redirectParams = {};
 
-    if (!authState) {
+    if (!store.state.Auth.authState) {
         await store.dispatch('Auth/getAuth');
     }
 
     if (to.matched.some((route) => route.meta.requiredAuth)) {
-        if (authState === AuthStates.SignedOut) {
+        if (store.state.Auth.authState === AuthStates.SignedOut) {
             redirectParams = { path: '/' };
         }
     } else if (to.matched.some((route) => route.meta.requiredUnauth)) {
-        if (authState === AuthStates.SignedIn) {
+        if (store.state.Auth.authState === AuthStates.SignedIn) {
             redirectParams = { path: '/root' };
         }
     }

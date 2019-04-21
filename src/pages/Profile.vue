@@ -110,13 +110,20 @@
 </template>
 
 <script lang="ts">
-import {Component, Vue, Watch} from 'vue-property-decorator';
-import {User} from '../models/User.interface';
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Action, State } from 'vuex-class';
+import { User } from '../models/User.interface';
 import _ from 'lodash';
 import fileQuotas from '../constants/fileQuotas';
 
 @Component
 export default class Profile extends Vue {
+
+    @State('myAccount', { namespace: 'Auth' })
+    myAccount: User;
+
+    @Action('editProfile', { namespace: 'Auth' })
+    editProfileAction;
 
     public profileChanged = false;
     public dialogOpened = false;
@@ -133,24 +140,26 @@ export default class Profile extends Vue {
             (v) => v.length <= 400 || 'Bio must be less then 60 characters',
         ],
     };
+
     public themas = [
         'Default',
         'Material Light',
         'Material Dark',
     ];
 
+    // this.myAccount is not working (as i understood this.myAccount is async)
     public myUser: User = Object.assign({}, this.$store.state.Auth.myAccount);
     public newAvatar: File;
 
-    @Watch('myUser', { deep: true } )
+    @Watch('myUser', { deep: true })
     public myUserChanged() {
-        this.profileChanged = !_.isEqual(this.myUser, this.$store.state.Auth.myAccount);
+        this.profileChanged = !_.isEqual(this.myUser, this.myAccount);
     }
 
-    public editProfile() {
+    public async editProfile() {
         if (this.isValid && this.profileChanged) {
-            this.$store.dispatch('Auth/editProfile', { changedUser: this.myUser, avatar: this.newAvatar })
-                .then(() => this.$router.back());
+            await this.editProfileAction({ changedUser: this.myUser, avatar: this.newAvatar });
+            this.$router.back();
         }
     }
 

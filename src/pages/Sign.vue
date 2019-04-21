@@ -36,12 +36,19 @@
 
 <script lang="ts">
 import { Vue, Component, Prop } from 'vue-property-decorator';
+import { Action } from 'vuex-class';
 
 @Component
 export default class Sign extends Vue {
 
     @Prop({type: Boolean, default: false})
     public isSignUp: boolean;
+
+    @Action('signUp', { namespace: 'Auth' })
+    signUpAction;
+
+    @Action('signIn', { namespace: 'Auth' })
+    signInAction;
 
     public login = '';
 
@@ -53,16 +60,16 @@ export default class Sign extends Vue {
         ],
     };
 
-    public signUp() {
+    public async signUp() {
         if (this.isValid) {
-            this.$store.dispatch('Auth/signUp', this.login)
-                .then(() => this.$router.push('/root'));
+            await this.signUpAction(this.login);
+            this.$router.push('/root');
         }
     }
 
-    public signIn() {
-        this.$store.dispatch('Auth/signIn')
-            .then(() => this.$router.push('/root'));
+    public async signIn() {
+        await this.signInAction();
+        this.$router.push('/root');
     }
 }
 </script>

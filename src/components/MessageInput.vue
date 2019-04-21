@@ -18,6 +18,7 @@
 
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
+import { Action, State } from 'vuex-class';
 import moment from 'moment';
 import _ from 'lodash';
 import { User } from '../models/User.interface';
@@ -26,15 +27,23 @@ import { User } from '../models/User.interface';
 export default class Chat extends Vue {
     public messageContent = '';
 
-
     @Prop(Boolean)
     public isDisabled: boolean;
 
     @Prop({type: Object as () => User})
     public interlocutor: User;
 
+    @State('myAccount', { namespace: 'Auth'})
+    myAccount: User;
+
+    @Action('sendFile', { namespace: 'Chat' })
+    sendFile;
+
+    @Action('sendMessage', { namespace: 'Chat' })
+    sendMessageAction;
+
     public sendFile() {
-        this.$store.dispatch('Chat/sendFile');
+        this.sendFile();
     }
 
     public sendMessage() {
@@ -42,14 +51,14 @@ export default class Chat extends Vue {
             return;
         }
         const  msg = {
-            who: this.$store.state.Auth.myAccount.uid,
+            who: this.myAccount.uid,
             to: this.interlocutor.uid,
             content: this.messageContent,
             dateOfSend: moment().toObject(),
             read: false,
         };
+        this.sendMessageAction(msg);
         this.messageContent = '';
-        this.$store.dispatch('Chat/sendMessage', msg);
     }
 }
 </script>
