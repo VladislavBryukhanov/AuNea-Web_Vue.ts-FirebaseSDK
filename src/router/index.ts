@@ -62,7 +62,7 @@ const router = new Router ({
                 {
                     path: '/Chat/:id',
                     component: Chat,
-                    name: 'Chat'
+                    name: 'Chat',
                 },
                 {
                     path: '/Profile',
@@ -75,19 +75,19 @@ const router = new Router ({
 });
 
 router.beforeEach(async (to, from, next) => {
-
-    if (!store.state.authState) {
-        await store.dispatch('getAuth');
-    }
-
+    const { authState } = store.state.Auth;
     let redirectParams = {};
 
+    if (!authState) {
+        await store.dispatch('Auth/getAuth');
+    }
+
     if (to.matched.some((route) => route.meta.requiredAuth)) {
-        if (store.state.authState === AuthStates.SignedOut) {
+        if (authState === AuthStates.SignedOut) {
             redirectParams = { path: '/' };
         }
     } else if (to.matched.some((route) => route.meta.requiredUnauth)) {
-        if (store.state.authState === AuthStates.SignedIn) {
+        if (authState === AuthStates.SignedIn) {
             redirectParams = { path: '/root' };
         }
     }

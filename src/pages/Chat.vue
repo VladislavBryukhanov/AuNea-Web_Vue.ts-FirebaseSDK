@@ -77,53 +77,57 @@
 </template>
 
 <script lang="ts">
-    import {Component, Vue} from 'vue-property-decorator';
+import {Component, Vue} from 'vue-property-decorator';
 import MessageInput from '@/components/MessageInput.vue';
 import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
 import moment from 'moment';
 import _ from 'lodash';
 
 @Component({
-    components: {
-        MessageInput,
-        UserNetworkStatus
-    },
+components: {
+    MessageInput,
+    UserNetworkStatus,
+},
 })
 export default class Chat extends Vue {
 
     public menuOptions = [
         {
             title: 'Edit',
-            action: () => null
+            action: () => null,
         },
         {
             title: 'Delete',
-            action: (uid) => this.deleteMessage(uid)
-        }
+            action: (uid) => this.deleteMessage(uid),
+        },
     ];
 
-    updated() {
+    public updated() {
         const container = this.$el.querySelector('.messagesContent');
         container.scrollTop = container.scrollHeight;
     }
 
-    mounted() {
-        this.$store.dispatch('getInterlocutor', this.dialogUid);
-        this.$store.dispatch('getChat', this.dialogUid);
+    public mounted() {
+        this.$store.dispatch('Chat/getInterlocutor', this.dialogUid);
+        this.$store.dispatch('Chat/getChat', this.dialogUid);
     }
 
-   beforeDestroy() {
-        this.$store.dispatch('disposeChat');
-   }
+    public beforeDestroy() {
+        this.$store.dispatch('Chat/disposeChat');
+    }
 
     get dialogUid() {
         return this.$route.params.id;
     }
     get messages() {
-        return this.$store.state.currentChat.messages;
+        if (this.$store.state.Chat.currentChat) {
+            return this.$store.state.Chat.currentChat.messages;
+        }
     }
     get interlocutor() {
-        return this.$store.state.currentChat.interlocutor;
+        if (this.$store.state.Chat.currentChat) {
+            return this.$store.state.Chat.currentChat.interlocutor;
+        }
     }
 
     public isMessagesFetched() {
@@ -131,15 +135,15 @@ export default class Chat extends Vue {
     }
 
     public isMyMessage(owner) {
-        return this.$store.state.myAccount.uid === owner;
+        return this.$store.state.Auth.myAccount.uid === owner;
     }
 
     public formatDateTime(date) {
-        return moment(date).format('hh:mm:ss')
+        return moment(date).format('hh:mm:ss');
     }
 
     public formatDateDay(date) {
-        return moment(date).format('DD MMM')
+        return moment(date).format('DD MMM');
     }
 
     public isImage(fileType) {
@@ -147,7 +151,7 @@ export default class Chat extends Vue {
     }
 
     public deleteMessage(uid) {
-        this.$store.dispatch('deleteMessage', uid);
+        this.$store.dispatch('Chat/deleteMessage', uid);
     }
 }
 </script>

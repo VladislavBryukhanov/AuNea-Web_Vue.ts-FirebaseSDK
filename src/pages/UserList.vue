@@ -32,7 +32,7 @@
 import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
 import {Component, Vue, Watch} from 'vue-property-decorator';
 import _ from 'lodash';
-import {User} from "../models/User.interface";
+import {User} from '../models/User.interface';
 
 @Component({
     components: {
@@ -41,15 +41,15 @@ import {User} from "../models/User.interface";
 })
 export default class UserList extends Vue {
 
-    //TODO define $store e.t.c prototype
-    mounted() {
-        if (_.isEmpty(this.$store.state.users)) {
-            this.$store.dispatch('getUsers');
+    // TODO define $store e.t.c prototype
+    public mounted() {
+        if (_.isEmpty(this.users)) {
+            this.$store.dispatch('UserList/getUsers');
         }
     }
 
     get users(): User[] {
-        return this.$store.state.users;
+        return this.$store.state.UserList.users;
     }
 }
 </script>

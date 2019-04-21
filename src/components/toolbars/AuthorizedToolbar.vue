@@ -66,7 +66,7 @@
 <script lang="ts">
 import { Vue, Component } from 'vue-property-decorator';
 import router from '@/router';
-import {User} from "../../models/User.interface";
+import {User} from '../../models/User.interface';
 
 @Component
 export default class PublicToolbar extends Vue {
@@ -77,19 +77,19 @@ export default class PublicToolbar extends Vue {
             icon: 'group',
             name: 'User list',
             to: '/UserList',
-            action: () => {}
+            action: () => {},
         },
         {
             icon: 'chat',
             name: 'Dialog list',
             to: '/DialogList',
-            action: () => {}
+            action: () => {},
         },
         {
             icon: 'settings',
             name: 'Profile',
             to: '/Profile',
-            action: () => {}
+            action: () => {},
         },
         {
             icon: 'power_settings_new',
@@ -107,23 +107,13 @@ export default class PublicToolbar extends Vue {
 //            });
 //        }
 
-/*
-    mounted() {
-        this.$store.dispatch('watchNetworkStatus');
-    }
-
-    beforeDestroy() {
-        this.$store.dispatch('unwatchNetworkStatus');
-    }
-*/
-
     get myProfile(): User {
-        return this.$store.state.myAccount;
+        return this.$store.state.Auth.myAccount || {};
     }
 
     public logOut() {
-        this.$store.dispatch('signOut');
-        this.$router.push('/');
+        this.$store.dispatch('Auth/signOut')
+            .then(() => this.$router.push('/'));
     }
 
 }

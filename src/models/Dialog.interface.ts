@@ -1,5 +1,5 @@
 import {Message} from '@/models/Message.interface';
-import {User} from "@/models/User.interface";
+import {User} from '@/models/User.interface';
 
 export interface Dialog {
     uid: string;

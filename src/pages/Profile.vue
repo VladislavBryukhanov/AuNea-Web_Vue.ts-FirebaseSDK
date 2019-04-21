@@ -113,7 +113,7 @@
 import {Component, Vue, Watch} from 'vue-property-decorator';
 import {User} from '../models/User.interface';
 import _ from 'lodash';
-import fileQuotas from "../constants/fileQuotas";
+import fileQuotas from '../constants/fileQuotas';
 
 @Component
 export default class Profile extends Vue {
@@ -123,14 +123,14 @@ export default class Profile extends Vue {
     public isValid = false;
     public rules = {
         loginRule: [
-            v => !!v || 'Login is required field',
-            v => (v.length >= 3 && v.length <= 20) || 'Login must be longer then 3 and less then 20 characters'
+            (v) => !!v || 'Login is required field',
+            (v) => (v.length >= 3 && v.length <= 20) || 'Login must be longer then 3 and less then 20 characters',
         ],
         nicknameRule: [
-            v => (v.length >= 3 && v.length <= 20) || 'Nickname must be longer then 3 and less then 20 characters'
+            (v) => (v.length >= 3 && v.length <= 20) || 'Nickname must be longer then 3 and less then 20 characters',
         ],
         bioRule: [
-            v => v.length <= 400 || 'Bio must be less then 60 characters'
+            (v) => v.length <= 400 || 'Bio must be less then 60 characters',
         ],
     };
     public themas = [
@@ -139,17 +139,17 @@ export default class Profile extends Vue {
         'Material Dark',
     ];
 
-    public myUser: User = Object.assign({}, this.$store.state.myAccount);
+    public myUser: User = Object.assign({}, this.$store.state.Auth.myAccount);
     public newAvatar: File;
 
     @Watch('myUser', { deep: true } )
-    myUserChanged() {
-        this.profileChanged = !_.isEqual(this.myUser, this.$store.state.myAccount);
+    public myUserChanged() {
+        this.profileChanged = !_.isEqual(this.myUser, this.$store.state.Auth.myAccount);
     }
 
     public editProfile() {
         if (this.isValid && this.profileChanged) {
-            this.$store.dispatch('editProfile', { changedUser: this.myUser, avatar: this.newAvatar })
+            this.$store.dispatch('Auth/editProfile', { changedUser: this.myUser, avatar: this.newAvatar })
                 .then(() => this.$router.back());
         }
     }
@@ -164,7 +164,7 @@ export default class Profile extends Vue {
         this.newAvatar = avatarFile;
         const fileReader = new FileReader();
         fileReader.onload = () => {
-            this.myUser.avatarUrl = fileReader.result;
+            this.myUser.avatarUrl = fileReader.result as string;
         };
         fileReader.readAsDataURL(avatarFile);
     }

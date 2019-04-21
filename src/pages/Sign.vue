@@ -48,20 +48,20 @@ export default class Sign extends Vue {
     public isValid = false;
     public rules = {
         loginRule: [
-            v => !!v || 'Login is required field',
-            v => (v.length >= 3 && v.length <= 20) || 'Login must be longer then 3 and less then 20 characters'
-        ]
+            (v) => !!v || 'Login is required field',
+            (v) => (v.length >= 3 && v.length <= 20) || 'Login must be longer then 3 and less then 20 characters',
+        ],
     };
 
     public signUp() {
-        if(this.isValid) {
-            this.$store.dispatch('signUp', this.login)
+        if (this.isValid) {
+            this.$store.dispatch('Auth/signUp', this.login)
                 .then(() => this.$router.push('/root'));
         }
     }
 
     public signIn() {
-        this.$store.dispatch('signIn')
+        this.$store.dispatch('Auth/signIn')
             .then(() => this.$router.push('/root'));
     }
 }

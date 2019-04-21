@@ -11,7 +11,7 @@
                     <v-badge
                         class="unreadCounter"
                         color="outcomeMessage"
-                        v-model="$store.state.myAccount.uid !== dialog.lastMessage.who && dialog.unreadCounter > 0"
+                        v-model="myUid !== dialog.lastMessage.who && dialog.unreadCounter > 0"
                         overlap>
                         <v-list-tile-avatar>
                             <img :src="dialog.speaker.avatarUrl"/>
@@ -39,20 +39,20 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import UserNetworkStatus from '@/components/UserNetworkStatus.vue'
-import { Dialog } from "../models/Dialog.interface";
+import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
+import { Dialog } from '../models/Dialog.interface';
 import moment from 'moment';
 import _ from 'lodash';
 
 @Component({
     components: {
-        UserNetworkStatus
-    }
+        UserNetworkStatus,
+    },
 })
 export default class DialogList extends Vue {
-    mounted() {
+    public mounted() {
         if (_.isEmpty(this.dialogs)) {
-            this.$store.dispatch('getDialogs');
+            this.$store.dispatch('DialogList/getDialogs');
         }
     }
 
@@ -61,7 +61,11 @@ export default class DialogList extends Vue {
     }
 
     get dialogs() {
-        return this.$store.state.dialogs;
+        return this.$store.state.DialogList.dialogs;
+    }
+
+    get myUid() {
+        return this.$store.state.Auth.myAccount.uid;
     }
 }
 </script>

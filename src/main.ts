@@ -29,7 +29,7 @@ Vue.use(Vuetify, {
         lightIonic: '#14aba8',
         lincIonicColor: '#00aca2',
         darkIonic: '#00726a',
-    }
+    },
 });
 
 new Vue({

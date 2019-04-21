@@ -3,4 +3,4 @@ export default {
     MAX_IMAGE_FILE_SIZE: 8 * 1024 * 1024,
     MAX_AUDIO_FILE_SIZE: 22 * 1024 * 1024,
     MAX_VIDEO_FILE_SIZE: 40 * 1024 * 1024,
-}
+};

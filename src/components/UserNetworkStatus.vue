@@ -8,13 +8,6 @@ import {Component, Vue, Prop} from 'vue-property-decorator';
 @Component
 export default class UserNetworkStatus extends Vue {
 
-    private readonly ONLINE_STATUS = 'Online';
-    private readonly OFFLINE_STATUS = 'Last seen at';
-    private readonly AFK_STATUS = 'AFK';
-
-    @Prop(String)
-    public userStatus: string;
-
     get statusIndicator() {
         if (this.userStatus.includes(this.ONLINE_STATUS)) {
             return 'online';
@@ -24,6 +17,13 @@ export default class UserNetworkStatus extends Vue {
             return '';
         }
     }
+
+    @Prop(String)
+    public userStatus: string;
+
+    private readonly ONLINE_STATUS = 'Online';
+    private readonly OFFLINE_STATUS = 'Last seen at';
+    private readonly AFK_STATUS = 'AFK';
 }
 </script>
 
