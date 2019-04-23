@@ -43,12 +43,12 @@ import { User } from '../models/User.interface';
 export default class UserList extends Vue {
 
     @State('users', { namespace: 'UserList' })
-    users: User[];
+    public users: User[];
 
     @Action('getUsers', { namespace: 'UserList' })
-    getUsers;
+    private getUsers;
 
-    public mounted() {
+    public beforeMount() {
         if (_.isEmpty(this.users)) {
             this.getUsers();
         }

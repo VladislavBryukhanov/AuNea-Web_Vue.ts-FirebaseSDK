@@ -73,7 +73,6 @@ import { User } from '../../models/User.interface';
 @Component
 export default class PublicToolbar extends Vue {
 
-
     @State('myAccount', { namespace: 'Auth' })
     myProfile: User;
 

@@ -44,6 +44,7 @@ import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
 import { Dialog } from '../models/Dialog.interface';
 import moment from 'moment';
 import _ from 'lodash';
+import { User } from '../models/User.interface';
 
 @Component({
     components: {
@@ -53,14 +54,15 @@ import _ from 'lodash';
 export default class DialogList extends Vue {
 
     @State('dialogs', { namespace: 'DialogList' })
-    dialogs: Dialog[];
+    public dialogs: Dialog[];
+
     @State('myAccount', { namespace: 'Auth' })
-    myAccount: string;
+    private myAccount: User;
 
     @Action('getDialogs', { namespace: 'DialogList' })
-    getDialogs;
+    private getDialogs;
 
-    public mounted() {
+    public beforeMount() {
         if (_.isEmpty(this.dialogs)) {
             this.getDialogs();
         }

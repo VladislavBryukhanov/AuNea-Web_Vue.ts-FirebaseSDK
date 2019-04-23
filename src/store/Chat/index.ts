@@ -6,7 +6,11 @@ import actions from '@/store/Chat/actions';
 
 const namespaced = true;
 export const state: ChatState = {
-    currentChat: null,
+    currentChat: {
+        messages: [],
+        interlocutor: null,
+        databaseRef: null,
+    },
 };
 
 export const Chat: Module<ChatState, RootState> = {

@@ -3,7 +3,9 @@ import {Message} from '@/models/Message.interface';
 import ChatState from '@/models/store/ChatState.interface';
 import firebase from 'firebase';
 import RootState from '@/models/store/RootState.interface';
+import _ from 'lodash';
 const database = firebase.database();
+
 
 const actions: ActionTree<ChatState, RootState> = {
     async getInterlocutor({ commit, rootState }, chatId) {
@@ -33,17 +35,57 @@ const actions: ActionTree<ChatState, RootState> = {
     },
 
     async getChat({ commit }, chatId) {
-        // FIXME
+        const chatRef = database.ref(`/Messages/${chatId}`);
+        commit('getChat', {
+            databaseRef: chatRef,
+        });
+
+        let prevent_first_child_added = true;
+
+/*        chatRef.on('child_changed', (messageSnapshot) => {
+            commit('changedMessage', { ...messageSnapshot.val(), uid: messageSnapshot.key })
+        });*/
+        chatRef.on('child_removed', (messageSnapshot) => {
+            // после удаления сразу же срабатывает адд ивент, т к он приасайнен к последнему айтему, а послдний айтем меняется
+            prevent_first_child_added = !prevent_first_child_added;
+            commit('removeMessage', { ...messageSnapshot.val(), uid: messageSnapshot.key })
+        });
+        chatRef.limitToLast(1).on('child_added', (messageSnapshot) => {
+            if (prevent_first_child_added) {
+                prevent_first_child_added = !prevent_first_child_added;
+            } else {
+                commit('appendMessage', { ...messageSnapshot.val(), uid: messageSnapshot.key })
+            }
+        });
+    },
+
+    async fetchMessages({ state, commit }, {chatId, limit}) {
         const chatRef = database.ref(`/Messages/${chatId}`);
 
-        chatRef.on('value', (chatSnapshot) => {
-            const messages = [];
-            chatSnapshot.forEach((messageSnap) => {
-                messages.push({...messageSnap.val(), uid: messageSnap.key});
-            });
-            commit('getChat', {
-                messages,
-                databaseRef: chatRef,
+        let query;
+
+        if (_.isEmpty(state.currentChat.messages)) {
+            query = chatRef
+                .orderByKey()
+                .startAt('')
+                .limitToLast(limit);
+        } else {
+            query = chatRef
+                .orderByKey()
+                .endAt(state.currentChat.messages[0].uid)
+                .limitToLast(limit);
+        }
+
+        return new Promise((resolve, reject) => {
+            query.once('value', (chatSnapshot) => {
+                const messages = [];
+                chatSnapshot.forEach((messageSnap) => {
+                    messages.push({...messageSnap.val(), uid: messageSnap.key});
+                });
+                commit('getMessages', {
+                    messages,
+                });
+                resolve();
             });
         });
     },

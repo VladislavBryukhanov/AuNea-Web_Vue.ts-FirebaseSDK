@@ -120,10 +120,10 @@ import fileQuotas from '../constants/fileQuotas';
 export default class Profile extends Vue {
 
     @State('myAccount', { namespace: 'Auth' })
-    myAccount: User;
+    private myAccount: User;
 
     @Action('editProfile', { namespace: 'Auth' })
-    editProfileAction;
+    private editProfileAction;
 
     public profileChanged = false;
     public dialogOpened = false;

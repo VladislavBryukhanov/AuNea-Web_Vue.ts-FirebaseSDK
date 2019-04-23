@@ -45,10 +45,10 @@ export default class Sign extends Vue {
     public isSignUp: boolean;
 
     @Action('signUp', { namespace: 'Auth' })
-    signUpAction;
+    private signUpAction;
 
     @Action('signIn', { namespace: 'Auth' })
-    signInAction;
+    private signInAction;
 
     public login = '';
 

@@ -40,7 +40,6 @@
                     :class="isMyMessage(message.who) ? 'outcome' : 'incoming'">
                     <!--<div class="arrow-left"></div>-->
 
-
                     <v-menu
                         bottom
                         transition="slide-y-transition">
@@ -85,6 +84,8 @@ import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
 import moment from 'moment';
 import _ from 'lodash';
 
+const MESSAGE_ITEM_MIN_HEIGHT = 31;
+
 @Component({
 components: {
     MessageInput,
@@ -97,13 +98,16 @@ export default class Chat extends Vue {
     private myAccount: User;
 
     @State('currentChat', { namespace: 'Chat' })
-    currentChat: Chat;
+    private currentChat: Chat;
 
     @Action('getInterlocutor', { namespace: 'Chat' })
     private getInterlocutor;
 
     @Action('getChat', { namespace: 'Chat' })
     private getChat;
+
+    @Action('fetchMessages', { namespace: 'Chat' })
+    private fetchMessages;
 
     @Action('disposeChat', { namespace: 'Chat' })
     private disposeChat;
@@ -122,14 +126,35 @@ export default class Chat extends Vue {
         },
     ];
 
-    public updated() {
-        const container = this.$el.querySelector('.messagesContent');
-        container.scrollTop = container.scrollHeight;
-    }
-
-    public mounted() {
+    public async mounted() {
         this.getInterlocutor(this.dialogUid);
         this.getChat(this.dialogUid);
+
+        const container = this.$el.querySelector('.messagesContent');
+        const { clientHeight } = container;
+        const limit = Math.round(clientHeight * 2 / MESSAGE_ITEM_MIN_HEIGHT);
+
+        await this.fetchMessages({ chatId: this.dialogUid, limit });
+        container.scrollTop = container.scrollHeight;
+
+        let fetch_status;
+        container.addEventListener('scroll', () => {
+
+            //TODO add prevent if all data loaded
+            if (container.scrollTop <= clientHeight / 2 && fetch_status !== 'pending') {
+                fetch_status = 'pending';
+                this.fetchMessages({ chatId: this.dialogUid, limit })
+                    .then(() => {
+                        fetch_status = 'done';
+                        container.scrollTop = MESSAGE_ITEM_MIN_HEIGHT * limit
+                    });
+            }
+        })
+    }
+
+    updated() {
+        const container = this.$el.querySelector('.messagesContent');
+        container.scrollTop = container.scrollHeight;
     }
 
     public beforeDestroy() {
@@ -160,6 +185,7 @@ export default class Chat extends Vue {
         }
     }
 
+    // TODO pipes
     public isImage(fileType) {
         return fileType === 'image';
     }

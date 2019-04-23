@@ -15,7 +15,6 @@
     </v-form>
 </template>
 
-
 <script lang="ts">
 import { Component, Vue, Prop } from 'vue-property-decorator';
 import { Action, State } from 'vuex-class';
@@ -34,17 +33,13 @@ export default class Chat extends Vue {
     public interlocutor: User;
 
     @State('myAccount', { namespace: 'Auth'})
-    myAccount: User;
+    private myAccount: User;
 
     @Action('sendFile', { namespace: 'Chat' })
-    sendFile;
+    public sendFile;
 
     @Action('sendMessage', { namespace: 'Chat' })
-    sendMessageAction;
-
-    public sendFile() {
-        this.sendFile();
-    }
+    private sendMessageAction;
 
     public sendMessage() {
         if (_.isEmpty(this.messageContent.trim())) {
