@@ -137,7 +137,7 @@ export default class Profile extends Vue {
             (v) => (v.length >= 3 && v.length <= 20) || 'Nickname must be longer then 3 and less then 20 characters',
         ],
         bioRule: [
-            (v) => v.length <= 400 || 'Bio must be less then 60 characters',
+            (v) => v.length <= 400 || 'Bio must be less then 400 characters',
         ],
     };
 

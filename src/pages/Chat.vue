@@ -2,6 +2,31 @@
     <v-sheet class="chat"
         elevation="6">
 
+        <v-dialog v-model="dialogOpened"
+                  max-width="350">
+            <v-card v-if="targetMessage">
+                <v-card-title>Are you sure?</v-card-title>
+
+                <v-card-text>
+                    Do you want remove this message: '{{targetMessage.content}}'
+                </v-card-text>
+
+                <v-card-actions>
+                    <v-spacer></v-spacer>
+                    <v-btn flat
+                           color="primary"
+                           @click="dialogOpened = !dialogOpened">
+                        Cancel
+                    </v-btn>
+                    <v-btn flat
+                           color="darkRed"
+                           @click="deleteMessage">
+                        Delete
+                    </v-btn>
+                </v-card-actions>
+            </v-card>
+        </v-dialog>
+
         <v-toolbar>
             <template  v-if="interlocutor">
                 <v-btn icon @click="$router.go(-1)">
@@ -52,18 +77,20 @@
                         </template>
 
                         <v-list>
+                            <v-list-tile>
+                                <v-list-tile-title>Edit</v-list-tile-title>
+                            </v-list-tile>
+
                             <v-list-tile
-                                v-for="(item, i) in menuOptions"
-                                :key="i"
-                                @click="item.action(message.uid)">
-                                <v-list-tile-title>{{ item.title }}</v-list-tile-title>
+                                @click="openConfirmationDialog(message)">
+                                <v-list-tile-title>Delete</v-list-tile-title>
                             </v-list-tile>
                         </v-list>
                     </v-menu>
 
                     <div class="dateOfSend">
-                        <div>{{formatDateTime(message.dateOfSend)}}</div>
-                        <div>{{formatDateDay(message.dateOfSend)}}</div>
+                        <div>{{formatDateTime(message.timestamp)}}</div>
+                        <div>{{formatDateDay(message.timestamp)}}</div>
                     </div>
                 </div>
             </template>
@@ -83,6 +110,7 @@ import MessageInput from '@/components/MessageInput.vue';
 import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
 import moment from 'moment';
 import _ from 'lodash';
+import { Message } from '@/models/Message.interface';
 
 const MESSAGE_ITEM_MIN_HEIGHT = 31;
 
@@ -113,18 +141,24 @@ export default class Chat extends Vue {
     private disposeChat;
 
     @Action('deleteMessage', { namespace: 'Chat' })
-    public deleteMessage;
+    public deleteMessageAction;
 
-    public menuOptions = [
-        {
-            title: 'Edit',
-            action: () => null,
-        },
-        {
-            title: 'Delete',
-            action: (uid) => this.deleteMessage(uid),
-        },
-    ];
+    public dialogOpened = false;
+    public targetMessage: Message = null;
+
+    get dialogUid() {
+        return this.$route.params.id;
+    }
+    get messages() {
+        if (this.currentChat) {
+            return this.currentChat.messages;
+        }
+    }
+    get interlocutor() {
+        if (this.currentChat) {
+            return this.currentChat.interlocutor;
+        }
+    }
 
     public async mounted() {
         this.getInterlocutor(this.dialogUid);
@@ -161,18 +195,15 @@ export default class Chat extends Vue {
         this.disposeChat();
     }
 
-    get dialogUid() {
-        return this.$route.params.id;
+    public openConfirmationDialog(message: Message) {
+        this.dialogOpened = true;
+        this.targetMessage = message;
     }
-    get messages() {
-        if (this.currentChat) {
-            return this.currentChat.messages;
-        }
-    }
-    get interlocutor() {
-        if (this.currentChat) {
-            return this.currentChat.interlocutor;
-        }
+
+    public deleteMessage() {
+        this.deleteMessageAction(this.targetMessage.uid);
+        this.targetMessage = null;
+        this.dialogOpened = false;
     }
 
     public isMessagesFetched() {

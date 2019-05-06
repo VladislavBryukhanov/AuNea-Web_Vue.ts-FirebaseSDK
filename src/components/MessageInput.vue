@@ -49,7 +49,7 @@ export default class Chat extends Vue {
             who: this.myAccount.uid,
             to: this.interlocutor.uid,
             content: this.messageContent,
-            dateOfSend: moment().toObject(),
+            timestamp: moment().unix(),
             read: false,
         };
         this.sendMessageAction(msg);

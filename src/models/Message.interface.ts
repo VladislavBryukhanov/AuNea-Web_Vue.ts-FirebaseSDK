@@ -1,7 +1,7 @@
 export interface Message {
     uid: string;
     content: string;
-    dateOfSend: any;
+    timestamp: number;
     read: boolean;
     to: string;
     who: string;

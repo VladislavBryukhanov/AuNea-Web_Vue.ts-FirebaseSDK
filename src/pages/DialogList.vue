@@ -69,7 +69,7 @@ export default class DialogList extends Vue {
     }
 
     public formatDate(dialog) {
-        return moment(dialog.lastMessage.dateOfSend).format('DD MMM');
+        return moment(dialog.lastMessage.timestamp).format('DD MMM');
     }
 
     get myUid() {

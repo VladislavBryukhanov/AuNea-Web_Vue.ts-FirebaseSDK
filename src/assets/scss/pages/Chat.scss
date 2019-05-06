@@ -1,9 +1,10 @@
 .chat.theme--light.v-sheet {
   background: rgba(0, 0, 0, .7);
-  height: 92vh;
+  margin: 4vh auto;
+  height: 88vh;
 
   .messagesContent {
-    height: 76vh;
+    height: calc(100% - 48px - 64px);
     overflow: auto;
 
     .incoming {
