@@ -1,4 +1,3 @@
-/*
 importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-app.js');
 importScripts('https://www.gstatic.com/firebasejs/4.8.1/firebase-messaging.js');
 
@@ -10,8 +9,10 @@ const messaging = firebase.messaging();
 
 messaging.setBackgroundMessageHandler(function(payload) {
 
-    const { sender, content, tag } = payload.data.data;
+    console.info(payload.data);
+    const { sender, content, tag } = payload.data;
     const senderUser = JSON.parse(sender);
+    console.info(senderUser);
 
     const notificationTitle = senderUser.login;
     const notificationOptions = {
@@ -22,4 +23,4 @@ messaging.setBackgroundMessageHandler(function(payload) {
     };
 
     return self.registration.showNotification(notificationTitle, notificationOptions);
-});*/
+});

@@ -62,7 +62,7 @@
 
             <template v-for="message in messages">
                 <div class="message"
-                    :class="isMyMessage(message.who) ? 'outcome' : 'incoming'">
+                    :class="messageType(message)">
                     <!--<div class="arrow-left"></div>-->
 
                     <v-menu
@@ -106,6 +106,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 import { State, Action } from 'vuex-class';
 import { User } from '@/models/User.interface';
+import { Message } from '../models/Message.interface';
 import MessageInput from '@/components/MessageInput.vue';
 import UserNetworkStatus from '@/components/UserNetworkStatus.vue';
 import moment from 'moment';
@@ -210,9 +211,14 @@ export default class Chat extends Vue {
         return _.isEmpty(this.messages);
     }
 
-    public isMyMessage(owner) {
-        if (this.myAccount) {
-            return this.myAccount.uid === owner;
+    public messageType(message: Message) {
+
+        if (!this.myAccount) { return; }
+
+        if (message.who === this.myAccount.uid) {
+            return message.read ? 'outcome' : 'unread'
+        } else {
+            return 'incoming';
         }
     }
 

@@ -13,8 +13,6 @@
       .content {
         background-color: #243443;
       }
-      .dateOfSend {
-      }
     }
     .outcome {
       display: flex;
@@ -26,9 +24,18 @@
         text-align: right;
       }
     }
+    .unread {
+      display: flex;
+      flex-direction: row-reverse;
+      .content {
+        background-color: #558DC4;
+      }
+      .dateOfSend {
+        text-align: right;
+      }
+    }
     .message {
       margin: 8px 10px;
-
 
       .content {
         cursor: pointer;

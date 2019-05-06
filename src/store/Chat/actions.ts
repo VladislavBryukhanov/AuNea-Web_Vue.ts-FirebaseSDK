@@ -12,7 +12,6 @@ const actions: ActionTree<ChatState, RootState> = {
         database
             .ref(`/Dialogs/${chatId}`)
             .once('value', async (chatSnapshot) => {
-
                 const { speakers } = chatSnapshot.val();
 
                 for (const speaker in speakers) {
@@ -36,25 +35,34 @@ const actions: ActionTree<ChatState, RootState> = {
 
     async getChat({ commit }, chatId) {
         const chatRef = database.ref(`/Messages/${chatId}`);
+        const dialogRef = database.ref(`/Dialogs/${chatId}`);
         commit('getChat', {
             databaseRef: chatRef,
         });
 
         let prevent_first_child_added = true;
 
-/*        chatRef.on('child_changed', (messageSnapshot) => {
-            commit('changedMessage', { ...messageSnapshot.val(), uid: messageSnapshot.key })
-        });*/
+        chatRef.on('child_changed', (messageSnapshot) => {
+            commit('changeMessage', { ...messageSnapshot.val(), uid: messageSnapshot.key });
+            dialogRef.child('lastMessage').set(messageSnapshot.val());
+        });
+
         chatRef.on('child_removed', (messageSnapshot) => {
             // после удаления сразу же срабатывает адд ивент, т к он приасайнен к последнему айтему, а послдний айтем меняется
             prevent_first_child_added = !prevent_first_child_added;
-            commit('removeMessage', { ...messageSnapshot.val(), uid: messageSnapshot.key })
+            commit('removeMessage', { ...messageSnapshot.val(), uid: messageSnapshot.key });
+
+            chatRef.limitToLast(1).once('child_added', (lastMsgSnap) => {
+                dialogRef.child('lastMessage').set(lastMsgSnap.val());
+            });
         });
+
         chatRef.limitToLast(1).on('child_added', (messageSnapshot) => {
             if (prevent_first_child_added) {
                 prevent_first_child_added = !prevent_first_child_added;
             } else {
-                commit('appendMessage', { ...messageSnapshot.val(), uid: messageSnapshot.key })
+                commit('appendMessage', { ...messageSnapshot.val(), uid: messageSnapshot.key });
+                dialogRef.child('lastMessage').set(messageSnapshot.val());
             }
         });
     },
